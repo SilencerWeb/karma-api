@@ -1,0 +1,17 @@
+{
+  "name": "karma-api",
+  "version": "1.0.0",
+  "dependencies": {
+    "graphql-yoga": "^1.14.10",
+    "prisma": "^1.10.2",
+    "prisma-binding": "^2.1.0"
+  },
+  "devDependencies": {
+    "graphql-cli": "^2.16.3",
+    "nodemon": "^1.17.5"
+  },
+  "scripts": {
+    "start": "nodemon src/index.js",
+    "deploy": "yarn prisma deploy"
+  }
+}

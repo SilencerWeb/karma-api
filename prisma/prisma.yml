@@ -1,0 +1,5 @@
+endpoint: https://eu1.prisma.sh/silencerweb-d7143d/karma-api/develop
+datamodel: datamodel.graphql
+hooks:
+  post-deploy:
+    - graphql get-schema -p prisma

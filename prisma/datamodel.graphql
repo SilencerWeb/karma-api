@@ -1,0 +1,22 @@
+type User {
+  id: ID! @unique
+  name: String!
+  persons: [Person!]!
+}
+
+type Person {
+  id: ID! @unique
+  name: String!
+  position: String!
+  karma: Int!
+  description: String!
+}
+
+type Action {
+  id: ID! @unique
+  title: String!
+  date: String!
+  description: String!
+  karma: String!
+  executors: String!
+}
