@@ -1,16 +1,26 @@
 # import User from './generated/prisma.graphql'
 # import Person from './generated/prisma.graphql'
 # import Action from './generated/prisma.graphql'
+# import ActionMember from './generated/prisma.graphql'
+
+
+input ActionMemberInput {
+  personId: ID!
+  side: String!
+}
+
 
 type Query {
-  user(id: ID!): User
-  users: [User!]
+  user(id: ID!): User!
+  users: [User!]!
 
-  person(id: ID!): Person
-  persons: [Person!]
+  person(id: ID!): Person!
+  persons(authorId: ID): [Person!]!
 
-  action(id: ID!): Action
+  action(id: ID!): Action!
+  actions(authorId: ID): [Action!]!
 }
+
 
 type Mutation {
   createUser(name: String!): User
@@ -21,7 +31,8 @@ type Mutation {
     name: String!,
     position: String!,
     description: String!,
-    karma: Int!
+    karma: Int!,
+    authorId: ID!
   ): Person
   updatePerson(
     id: ID!,
@@ -36,16 +47,19 @@ type Mutation {
     title: String!,
     date: String!,
     description: String!,
-    karma: Int!,
-    executors: String!
+    karma: String!,
+    executors: String!,
+#    members: [ActionMemberInput!]!,
+    authorId: ID!
   ): Action
   updateAction(
     id: ID!,
     title: String!,
     date: String!,
     description: String!,
-    karma: Int!,
-    executors: String!
+    karma: String!,
+    executors: String!,
+#    members: [ActionMemberInput!]!
   ): Action
-  deleteAction(id: ID!,): Action
+  deleteAction(id: ID!): Action
 }

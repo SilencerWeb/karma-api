@@ -1,5 +1,5 @@
 # source: https://eu1.prisma.sh/silencerweb-d7143d/karma-api/develop
-# timestamp: Mon Jun 25 2018 12:48:06 GMT+0500 (Uzbekistan Standard Time)
+# timestamp: Tue Jun 26 2018 09:39:56 GMT+0500 (Uzbekistan Standard Time)
 
 type Action implements Node {
   id: ID!
@@ -8,6 +8,7 @@ type Action implements Node {
   description: String!
   karma: String!
   executors: String!
+  author(where: UserWhereInput): User!
 }
 
 """A connection to a list of items."""
@@ -26,6 +27,7 @@ input ActionCreateInput {
   description: String!
   karma: String!
   executors: String!
+  author: UserCreateOneInput!
 }
 
 """An edge in a connection."""
@@ -35,6 +37,146 @@ type ActionEdge {
 
   """A cursor for use in pagination."""
   cursor: String!
+}
+
+type ActionMember {
+  person(where: PersonWhereInput): Person!
+  side: String!
+}
+
+"""A connection to a list of items."""
+type ActionMemberConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [ActionMemberEdge]!
+  aggregate: AggregateActionMember!
+}
+
+input ActionMemberCreateInput {
+  side: String!
+  person: PersonCreateOneInput!
+}
+
+"""An edge in a connection."""
+type ActionMemberEdge {
+  """The item at the end of the edge."""
+  node: ActionMember!
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+enum ActionMemberOrderByInput {
+  side_ASC
+  side_DESC
+  id_ASC
+  id_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type ActionMemberPreviousValues {
+  side: String!
+}
+
+type ActionMemberSubscriptionPayload {
+  mutation: MutationType!
+  node: ActionMember
+  updatedFields: [String!]
+  previousValues: ActionMemberPreviousValues
+}
+
+input ActionMemberSubscriptionWhereInput {
+  """Logical AND on all given filters."""
+  AND: [ActionMemberSubscriptionWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [ActionMemberSubscriptionWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [ActionMemberSubscriptionWhereInput!]
+
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: ActionMemberWhereInput
+}
+
+input ActionMemberUpdateInput {
+  side: String
+  person: PersonUpdateOneInput
+}
+
+input ActionMemberWhereInput {
+  """Logical AND on all given filters."""
+  AND: [ActionMemberWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [ActionMemberWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [ActionMemberWhereInput!]
+  side: String
+
+  """All values that are not equal to given value."""
+  side_not: String
+
+  """All values that are contained in given list."""
+  side_in: [String!]
+
+  """All values that are not contained in given list."""
+  side_not_in: [String!]
+
+  """All values less than the given value."""
+  side_lt: String
+
+  """All values less than or equal the given value."""
+  side_lte: String
+
+  """All values greater than the given value."""
+  side_gt: String
+
+  """All values greater than or equal the given value."""
+  side_gte: String
+
+  """All values containing the given string."""
+  side_contains: String
+
+  """All values not containing the given string."""
+  side_not_contains: String
+
+  """All values starting with the given string."""
+  side_starts_with: String
+
+  """All values not starting with the given string."""
+  side_not_starts_with: String
+
+  """All values ending with the given string."""
+  side_ends_with: String
+
+  """All values not ending with the given string."""
+  side_not_ends_with: String
+  person: PersonWhereInput
 }
 
 enum ActionOrderByInput {
@@ -110,6 +252,7 @@ input ActionUpdateInput {
   description: String
   karma: String
   executors: String
+  author: UserUpdateOneInput
 }
 
 input ActionWhereInput {
@@ -361,6 +504,7 @@ input ActionWhereInput {
 
   """All values not ending with the given string."""
   executors_not_ends_with: String
+  author: UserWhereInput
 }
 
 input ActionWhereUniqueInput {
@@ -368,6 +512,10 @@ input ActionWhereUniqueInput {
 }
 
 type AggregateAction {
+  count: Int!
+}
+
+type AggregateActionMember {
   count: Int!
 }
 
@@ -391,24 +539,27 @@ Long can represent values between -(2^63) and 2^63 - 1.
 scalar Long
 
 type Mutation {
-  createUser(data: UserCreateInput!): User!
   createAction(data: ActionCreateInput!): Action!
+  createActionMember(data: ActionMemberCreateInput!): ActionMember!
   createPerson(data: PersonCreateInput!): Person!
-  updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
+  createUser(data: UserCreateInput!): User!
   updateAction(data: ActionUpdateInput!, where: ActionWhereUniqueInput!): Action
   updatePerson(data: PersonUpdateInput!, where: PersonWhereUniqueInput!): Person
-  deleteUser(where: UserWhereUniqueInput!): User
+  updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
   deleteAction(where: ActionWhereUniqueInput!): Action
   deletePerson(where: PersonWhereUniqueInput!): Person
-  upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
+  deleteUser(where: UserWhereUniqueInput!): User
   upsertAction(where: ActionWhereUniqueInput!, create: ActionCreateInput!, update: ActionUpdateInput!): Action!
   upsertPerson(where: PersonWhereUniqueInput!, create: PersonCreateInput!, update: PersonUpdateInput!): Person!
-  updateManyUsers(data: UserUpdateInput!, where: UserWhereInput): BatchPayload!
+  upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
   updateManyActions(data: ActionUpdateInput!, where: ActionWhereInput): BatchPayload!
+  updateManyActionMembers(data: ActionMemberUpdateInput!, where: ActionMemberWhereInput): BatchPayload!
   updateManyPersons(data: PersonUpdateInput!, where: PersonWhereInput): BatchPayload!
-  deleteManyUsers(where: UserWhereInput): BatchPayload!
+  updateManyUsers(data: UserUpdateInput!, where: UserWhereInput): BatchPayload!
   deleteManyActions(where: ActionWhereInput): BatchPayload!
+  deleteManyActionMembers(where: ActionMemberWhereInput): BatchPayload!
   deleteManyPersons(where: PersonWhereInput): BatchPayload!
+  deleteManyUsers(where: UserWhereInput): BatchPayload!
 }
 
 enum MutationType {
@@ -444,6 +595,7 @@ type Person implements Node {
   position: String!
   karma: Int!
   description: String!
+  author(where: UserWhereInput): User!
 }
 
 """A connection to a list of items."""
@@ -461,11 +613,12 @@ input PersonCreateInput {
   position: String!
   karma: Int!
   description: String!
+  author: UserCreateOneInput!
 }
 
-input PersonCreateManyInput {
-  create: [PersonCreateInput!]
-  connect: [PersonWhereUniqueInput!]
+input PersonCreateOneInput {
+  create: PersonCreateInput
+  connect: PersonWhereUniqueInput
 }
 
 """An edge in a connection."""
@@ -546,6 +699,7 @@ input PersonUpdateDataInput {
   position: String
   karma: Int
   description: String
+  author: UserUpdateOneInput
 }
 
 input PersonUpdateInput {
@@ -553,24 +707,18 @@ input PersonUpdateInput {
   position: String
   karma: Int
   description: String
+  author: UserUpdateOneInput
 }
 
-input PersonUpdateManyInput {
-  create: [PersonCreateInput!]
-  connect: [PersonWhereUniqueInput!]
-  disconnect: [PersonWhereUniqueInput!]
-  delete: [PersonWhereUniqueInput!]
-  update: [PersonUpdateWithWhereUniqueNestedInput!]
-  upsert: [PersonUpsertWithWhereUniqueNestedInput!]
+input PersonUpdateOneInput {
+  create: PersonCreateInput
+  connect: PersonWhereUniqueInput
+  delete: Boolean
+  update: PersonUpdateDataInput
+  upsert: PersonUpsertNestedInput
 }
 
-input PersonUpdateWithWhereUniqueNestedInput {
-  where: PersonWhereUniqueInput!
-  data: PersonUpdateDataInput!
-}
-
-input PersonUpsertWithWhereUniqueNestedInput {
-  where: PersonWhereUniqueInput!
+input PersonUpsertNestedInput {
   update: PersonUpdateDataInput!
   create: PersonCreateInput!
 }
@@ -766,9 +914,10 @@ input PersonWhereInput {
 
   """All values not ending with the given string."""
   description_not_ends_with: String
-  _MagicalBackRelation_PersonToUser_every: UserWhereInput
-  _MagicalBackRelation_PersonToUser_some: UserWhereInput
-  _MagicalBackRelation_PersonToUser_none: UserWhereInput
+  author: UserWhereInput
+  _MagicalBackRelation_ActionMemberToPerson_every: ActionMemberWhereInput
+  _MagicalBackRelation_ActionMemberToPerson_some: ActionMemberWhereInput
+  _MagicalBackRelation_ActionMemberToPerson_none: ActionMemberWhereInput
 }
 
 input PersonWhereUniqueInput {
@@ -776,15 +925,17 @@ input PersonWhereUniqueInput {
 }
 
 type Query {
-  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
   actions(where: ActionWhereInput, orderBy: ActionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Action]!
+  actionMembers(where: ActionMemberWhereInput, orderBy: ActionMemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [ActionMember]!
   persons(where: PersonWhereInput, orderBy: PersonOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Person]!
-  user(where: UserWhereUniqueInput!): User
+  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
   action(where: ActionWhereUniqueInput!): Action
   person(where: PersonWhereUniqueInput!): Person
-  usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
+  user(where: UserWhereUniqueInput!): User
   actionsConnection(where: ActionWhereInput, orderBy: ActionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ActionConnection!
+  actionMembersConnection(where: ActionMemberWhereInput, orderBy: ActionMemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ActionMemberConnection!
   personsConnection(where: PersonWhereInput, orderBy: PersonOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PersonConnection!
+  usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
 
   """Fetches an object given its ID"""
   node(
@@ -794,15 +945,15 @@ type Query {
 }
 
 type Subscription {
-  user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
   action(where: ActionSubscriptionWhereInput): ActionSubscriptionPayload
+  actionMember(where: ActionMemberSubscriptionWhereInput): ActionMemberSubscriptionPayload
   person(where: PersonSubscriptionWhereInput): PersonSubscriptionPayload
+  user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
 }
 
 type User implements Node {
   id: ID!
   name: String!
-  persons(where: PersonWhereInput, orderBy: PersonOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Person!]
 }
 
 """A connection to a list of items."""
@@ -817,7 +968,11 @@ type UserConnection {
 
 input UserCreateInput {
   name: String!
-  persons: PersonCreateManyInput
+}
+
+input UserCreateOneInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
 }
 
 """An edge in a connection."""
@@ -884,9 +1039,25 @@ input UserSubscriptionWhereInput {
   node: UserWhereInput
 }
 
+input UserUpdateDataInput {
+  name: String
+}
+
 input UserUpdateInput {
   name: String
-  persons: PersonUpdateManyInput
+}
+
+input UserUpdateOneInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
+  delete: Boolean
+  update: UserUpdateDataInput
+  upsert: UserUpsertNestedInput
+}
+
+input UserUpsertNestedInput {
+  update: UserUpdateDataInput!
+  create: UserCreateInput!
 }
 
 input UserWhereInput {
@@ -978,9 +1149,12 @@ input UserWhereInput {
 
   """All values not ending with the given string."""
   name_not_ends_with: String
-  persons_every: PersonWhereInput
-  persons_some: PersonWhereInput
-  persons_none: PersonWhereInput
+  _MagicalBackRelation_PersonToUser_every: PersonWhereInput
+  _MagicalBackRelation_PersonToUser_some: PersonWhereInput
+  _MagicalBackRelation_PersonToUser_none: PersonWhereInput
+  _MagicalBackRelation_ActionToUser_every: ActionWhereInput
+  _MagicalBackRelation_ActionToUser_some: ActionWhereInput
+  _MagicalBackRelation_ActionToUser_none: ActionWhereInput
 }
 
 input UserWhereUniqueInput {

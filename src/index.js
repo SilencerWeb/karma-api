@@ -13,12 +13,55 @@ const resolvers = {
         info,
       );
     },
-    
+    users: (_, args, context, info) => {
+      return context.prisma.query.users(
+        {
+          where: {},
+        },
+        info,
+      );
+    },
+
     person: (_, args, context, info) => {
       return context.prisma.query.person(
         {
           where: {
             id: args.id,
+          },
+        },
+        info,
+      );
+    },
+    persons: (_, args, context, info) => {
+      return context.prisma.query.persons(
+        {
+          where: {
+            author: {
+              id: args.authorId,
+            },
+          },
+        },
+        info,
+      );
+    },
+
+    action: (_, args, context, info) => {
+      return context.prisma.query.action(
+        {
+          where: {
+            id: args.id,
+          },
+        },
+        info,
+      );
+    },
+    actions: (_, args, context, info) => {
+      return context.prisma.query.actions(
+        {
+          where: {
+            author: {
+              id: args.authorId,
+            },
           },
         },
         info,
@@ -68,6 +111,11 @@ const resolvers = {
             position: args.position,
             description: args.description,
             karma: args.karma,
+            author: {
+              connect: {
+                id: args.authorId,
+              },
+            },
           },
         },
         info,
@@ -109,6 +157,21 @@ const resolvers = {
             description: args.description,
             karma: args.karma,
             executors: args.executors,
+            // members: args.members.map((member) => {
+            //   return {
+            //     person: {
+            //       connect: {
+            //         id: member.personId,
+            //       },
+            //     },
+            //     side: member.side,
+            //   };
+            // }),
+            author: {
+              connect: {
+                id: args.authorId,
+              },
+            },
           },
         },
         info,
@@ -126,6 +189,16 @@ const resolvers = {
             description: args.description,
             karma: args.karma,
             executors: args.executors,
+            // members: args.members.map((member) => {
+            //   return {
+            //     person: {
+            //       connect: {
+            //         id: member.personId,
+            //       },
+            //     },
+            //     side: member.side,
+            //   };
+            // }),
           },
         },
         info,
