@@ -1,5 +1,5 @@
 # source: https://eu1.prisma.sh/silencerweb-d7143d/karma-api/develop
-# timestamp: Tue Jun 26 2018 17:44:08 GMT+0500 (Uzbekistan Standard Time)
+# timestamp: Tue Jun 26 2018 21:46:50 GMT+0500 (Uzbekistan Standard Time)
 
 type Action implements Node {
   id: ID!
@@ -1104,9 +1104,9 @@ type Subscription {
 type User implements Node {
   id: ID!
   email: String!
-  nickname: String
   password: String!
   name: String!
+  nickname: String
 }
 
 """A connection to a list of items."""
@@ -1121,9 +1121,9 @@ type UserConnection {
 
 input UserCreateInput {
   email: String!
-  nickname: String
   password: String!
   name: String!
+  nickname: String
 }
 
 input UserCreateOneInput {
@@ -1145,12 +1145,12 @@ enum UserOrderByInput {
   id_DESC
   email_ASC
   email_DESC
-  nickname_ASC
-  nickname_DESC
   password_ASC
   password_DESC
   name_ASC
   name_DESC
+  nickname_ASC
+  nickname_DESC
   updatedAt_ASC
   updatedAt_DESC
   createdAt_ASC
@@ -1160,9 +1160,9 @@ enum UserOrderByInput {
 type UserPreviousValues {
   id: ID!
   email: String!
-  nickname: String
   password: String!
   name: String!
+  nickname: String
 }
 
 type UserSubscriptionPayload {
@@ -1206,16 +1206,16 @@ input UserSubscriptionWhereInput {
 
 input UserUpdateDataInput {
   email: String
-  nickname: String
   password: String
   name: String
+  nickname: String
 }
 
 input UserUpdateInput {
   email: String
-  nickname: String
   password: String
   name: String
+  nickname: String
 }
 
 input UserUpdateOneInput {
@@ -1320,46 +1320,6 @@ input UserWhereInput {
 
   """All values not ending with the given string."""
   email_not_ends_with: String
-  nickname: String
-
-  """All values that are not equal to given value."""
-  nickname_not: String
-
-  """All values that are contained in given list."""
-  nickname_in: [String!]
-
-  """All values that are not contained in given list."""
-  nickname_not_in: [String!]
-
-  """All values less than the given value."""
-  nickname_lt: String
-
-  """All values less than or equal the given value."""
-  nickname_lte: String
-
-  """All values greater than the given value."""
-  nickname_gt: String
-
-  """All values greater than or equal the given value."""
-  nickname_gte: String
-
-  """All values containing the given string."""
-  nickname_contains: String
-
-  """All values not containing the given string."""
-  nickname_not_contains: String
-
-  """All values starting with the given string."""
-  nickname_starts_with: String
-
-  """All values not starting with the given string."""
-  nickname_not_starts_with: String
-
-  """All values ending with the given string."""
-  nickname_ends_with: String
-
-  """All values not ending with the given string."""
-  nickname_not_ends_with: String
   password: String
 
   """All values that are not equal to given value."""
@@ -1440,6 +1400,46 @@ input UserWhereInput {
 
   """All values not ending with the given string."""
   name_not_ends_with: String
+  nickname: String
+
+  """All values that are not equal to given value."""
+  nickname_not: String
+
+  """All values that are contained in given list."""
+  nickname_in: [String!]
+
+  """All values that are not contained in given list."""
+  nickname_not_in: [String!]
+
+  """All values less than the given value."""
+  nickname_lt: String
+
+  """All values less than or equal the given value."""
+  nickname_lte: String
+
+  """All values greater than the given value."""
+  nickname_gt: String
+
+  """All values greater than or equal the given value."""
+  nickname_gte: String
+
+  """All values containing the given string."""
+  nickname_contains: String
+
+  """All values not containing the given string."""
+  nickname_not_contains: String
+
+  """All values starting with the given string."""
+  nickname_starts_with: String
+
+  """All values not starting with the given string."""
+  nickname_not_starts_with: String
+
+  """All values ending with the given string."""
+  nickname_ends_with: String
+
+  """All values not ending with the given string."""
+  nickname_not_ends_with: String
   _MagicalBackRelation_PersonToUser_every: PersonWhereInput
   _MagicalBackRelation_PersonToUser_some: PersonWhereInput
   _MagicalBackRelation_PersonToUser_none: PersonWhereInput
@@ -1453,4 +1453,5 @@ input UserWhereInput {
 
 input UserWhereUniqueInput {
   id: ID
+  email: String
 }

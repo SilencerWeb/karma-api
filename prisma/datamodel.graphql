@@ -1,9 +1,9 @@
 type User {
   id: ID! @unique
-  email: String!
-  nickname: String
-  password: String!
+  email: String! @hidden @unique
+  password: String! @hidden
   name: String!
+  nickname: String
 #  createdAt: DateTime!
 #  updatedAt: DateTime!
 }

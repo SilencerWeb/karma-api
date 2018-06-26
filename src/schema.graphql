@@ -24,64 +24,64 @@ type Query {
 
 type Mutation {
   signup(
-    email: String!,
-    nickname: String,
-    password: String!,
-    name: String!,
-    #    createdAt: DateTime!,
+    email: String!
+    password: String!
+    name: String!
+    nickname: String
+    #    createdAt: DateTime!
     #    updatedAt: DateTime!
   ): AuthPayload!
-  login(email: String!, nickname: String, password: String!): AuthPayload!
+  login(email: String! password: String!): AuthPayload!
 
   createUser(
-    email: String!,
-    nickname: String,
-    name: String!,
-    #    createdAt: DateTime!,
+    email: String!
+    nickname: String
+    name: String!
+    #    createdAt: DateTime!
     #    updatedAt: DateTime!
   ): User
   updateUser(
-    id: ID!,
-    email: String!,
-    nickname: String,
-    name: String!,
-    #    createdAt: DateTime!,
+    id: ID!
+    email: String!
+    nickname: String
+    name: String!
+    #    createdAt: DateTime!
     #    updatedAt: DateTime!
   ): User
   deleteUser(id: ID!): User
 
   createPerson(
-    name: String!,
-    position: String!,
-    description: String!,
-    karma: Int!,
+    name: String!
+    position: String!
+    description: String!
+    karma: Int!
     authorId: ID!
   ): Person
   updatePerson(
-    id: ID!,
-    name: String!,
-    position: String!,
-    description: String!,
+    id: ID!
+    name: String!
+    position: String!
+    description: String!
     karma: Int!
   ): Person
   deletePerson(id: ID!): Person
 
   createAction(
-    title: String!,
-    date: String!,
-    description: String!,
-    karma: String!,
-    executors: String!,
-    #    members: [ActionMemberInput!]!,
+    title: String!
+    date: String!
+    description: String!
+    karma: String!
+    executors: String!
+    #    members: [ActionMemberInput!]!
     authorId: ID!
   ): Action
   updateAction(
-    id: ID!,
-    title: String!,
-    date: String!,
-    description: String!,
-    karma: String!,
-    executors: String!,
+    id: ID!
+    title: String!
+    date: String!
+    description: String!
+    karma: String!
+    executors: String!
     #    members: [ActionMemberInput!]!
   ): Action
   deleteAction(id: ID!): Action
