@@ -2,16 +2,22 @@
   "name": "karma-api",
   "version": "1.0.0",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "graphql-yoga": "^1.14.10",
-    "prisma": "^1.10.2",
+    "jsonwebtoken": "^8.3.0",
     "prisma-binding": "^2.1.0"
   },
   "devDependencies": {
+    "dotenv": "^6.0.0",
     "graphql-cli": "^2.16.3",
-    "nodemon": "^1.17.5"
+    "nodemon": "^1.17.5",
+    "prisma": "^1.10.2"
   },
   "scripts": {
     "start": "nodemon src/index.js",
-    "deploy": "yarn prisma deploy"
+    "deploy:prisma": "yarn prisma deploy",
+    "deploy:heroku": "git push heroku master -f",
+    "deploy": "yarn 'deploy:prisma' && yarn 'deploy:heroku'",
+    "get-schema": "yarn graphql get-schema -p prisma"
   }
 }

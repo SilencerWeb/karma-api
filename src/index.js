@@ -1,13 +1,21 @@
+require('dotenv').config();
+
 const { GraphQLServer } = require('graphql-yoga');
 const { Prisma } = require('prisma-binding');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+const { getUserId } = require('./utils');
 
 const resolvers = {
   Query: {
     user: (_, args, context, info) => {
+      const id = getUserId(context);
+
       return context.prisma.query.user(
         {
           where: {
-            id: args.id,
+            id: id,
           },
         },
         info,
@@ -23,21 +31,25 @@ const resolvers = {
     },
 
     person: (_, args, context, info) => {
+      const authorId = getUserId(context);
+
       return context.prisma.query.person(
         {
           where: {
-            id: args.id,
+            authorId: authorId,
           },
         },
         info,
       );
     },
     persons: (_, args, context, info) => {
+      const authorId = getUserId(context);
+
       return context.prisma.query.persons(
         {
           where: {
             author: {
-              id: args.authorId,
+              authorId: authorId,
             },
           },
         },
@@ -46,21 +58,25 @@ const resolvers = {
     },
 
     action: (_, args, context, info) => {
+      const authorId = getUserId(context);
+
       return context.prisma.query.action(
         {
           where: {
-            id: args.id,
+            authorId: authorId,
           },
         },
         info,
       );
     },
     actions: (_, args, context, info) => {
+      const authorId = getUserId(context);
+
       return context.prisma.query.actions(
         {
           where: {
             author: {
-              id: args.authorId,
+              id: authorId,
             },
           },
         },
@@ -69,6 +85,48 @@ const resolvers = {
     },
   },
   Mutation: {
+    signup: async(_, args, context, info) => {
+      const password = await bcrypt.hash(args.password, 10);
+      const user = await context.prisma.mutation.createUser({
+        data: {
+          email: args.email,
+          nickname: args.nickname,
+          password: password,
+          name: args.name,
+        },
+      });
+
+      return {
+        token: jwt.sign({ userId: user.id }, process.env.APP_SECRET),
+        user,
+      };
+    },
+
+    login: async(_, args, context, info) => {
+      const user = await context.prisma.query.user(
+        {
+          where: {
+            email: args.email,
+          },
+        },
+      );
+
+      if (!user) {
+        throw new Error(`No such user found for email: ${args.email}`);
+      }
+
+      const valid = await bcrypt.compare(args.password, user.password);
+
+      if (!valid) {
+        throw new Error('Invalid password');
+      }
+
+      return {
+        token: jwt.sign({ userId: user.id }, process.env.APP_SECRET),
+        user,
+      };
+    },
+
     createUser: (_, args, context, info) => {
       return context.prisma.mutation.createUser(
         {
@@ -215,6 +273,11 @@ const resolvers = {
       );
     },
   },
+  AuthPayload: {
+    user: async({ user: { id } }, args, context, info) => {
+      return context.prisma.query.user({ where: { id } }, info);
+    },
+  },
 };
 
 const server = new GraphQLServer({
@@ -224,7 +287,7 @@ const server = new GraphQLServer({
     ...req,
     prisma: new Prisma({
       typeDefs: 'src/generated/prisma.graphql',
-      endpoint: 'https://eu1.prisma.sh/silencerweb-d7143d/karma-api/develop',
+      endpoint: process.env.PRISMA_ENDPOINT,
     }),
   }),
 });

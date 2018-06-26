@@ -1,7 +1,7 @@
 # import User from './generated/prisma.graphql'
 # import Person from './generated/prisma.graphql'
 # import Action from './generated/prisma.graphql'
-# import ActionMember from './generated/prisma.graphql'
+# import AuthPayload from './generated/prisma.graphql'
 
 
 input ActionMemberInput {
@@ -11,20 +11,43 @@ input ActionMemberInput {
 
 
 type Query {
-  user(id: ID!): User!
+  user: User!
   users: [User!]!
 
-  person(id: ID!): Person!
-  persons(authorId: ID): [Person!]!
+  person: Person!
+  persons: [Person!]!
 
-  action(id: ID!): Action!
-  actions(authorId: ID): [Action!]!
+  action: Action!
+  actions: [Action!]!
 }
 
 
 type Mutation {
-  createUser(name: String!): User
-  updateUser(id: ID!, name: String!): User
+  signup(
+    email: String!,
+    nickname: String,
+    password: String!,
+    name: String!,
+    #    createdAt: DateTime!,
+    #    updatedAt: DateTime!
+  ): AuthPayload!
+  login(email: String, nickname: String, password: String!): AuthPayload!
+
+  createUser(
+    email: String!,
+    nickname: String,
+    name: String!,
+    #    createdAt: DateTime!,
+    #    updatedAt: DateTime!
+  ): User
+  updateUser(
+    id: ID!,
+    email: String!,
+    nickname: String,
+    name: String!,
+    #    createdAt: DateTime!,
+    #    updatedAt: DateTime!
+  ): User
   deleteUser(id: ID!): User
 
   createPerson(
@@ -49,7 +72,7 @@ type Mutation {
     description: String!,
     karma: String!,
     executors: String!,
-#    members: [ActionMemberInput!]!,
+    #    members: [ActionMemberInput!]!,
     authorId: ID!
   ): Action
   updateAction(
@@ -59,7 +82,7 @@ type Mutation {
     description: String!,
     karma: String!,
     executors: String!,
-#    members: [ActionMemberInput!]!
+    #    members: [ActionMemberInput!]!
   ): Action
   deleteAction(id: ID!): Action
 }

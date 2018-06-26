@@ -1,5 +1,5 @@
 # source: https://eu1.prisma.sh/silencerweb-d7143d/karma-api/develop
-# timestamp: Tue Jun 26 2018 09:39:56 GMT+0500 (Uzbekistan Standard Time)
+# timestamp: Tue Jun 26 2018 16:05:21 GMT+0500 (Uzbekistan Standard Time)
 
 type Action implements Node {
   id: ID!
@@ -8,6 +8,7 @@ type Action implements Node {
   description: String!
   karma: String!
   executors: String!
+  members(where: ActionMemberWhereInput, orderBy: ActionMemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [ActionMember!]
   author(where: UserWhereInput): User!
 }
 
@@ -27,6 +28,7 @@ input ActionCreateInput {
   description: String!
   karma: String!
   executors: String!
+  members: ActionMemberCreateManyInput
   author: UserCreateOneInput!
 }
 
@@ -57,6 +59,10 @@ type ActionMemberConnection {
 input ActionMemberCreateInput {
   side: String!
   person: PersonCreateOneInput!
+}
+
+input ActionMemberCreateManyInput {
+  create: [ActionMemberCreateInput!]
 }
 
 """An edge in a connection."""
@@ -127,6 +133,10 @@ input ActionMemberUpdateInput {
   person: PersonUpdateOneInput
 }
 
+input ActionMemberUpdateManyInput {
+  create: [ActionMemberCreateInput!]
+}
+
 input ActionMemberWhereInput {
   """Logical AND on all given filters."""
   AND: [ActionMemberWhereInput!]
@@ -177,6 +187,9 @@ input ActionMemberWhereInput {
   """All values not ending with the given string."""
   side_not_ends_with: String
   person: PersonWhereInput
+  _MagicalBackRelation_ActionToActionMember_every: ActionWhereInput
+  _MagicalBackRelation_ActionToActionMember_some: ActionWhereInput
+  _MagicalBackRelation_ActionToActionMember_none: ActionWhereInput
 }
 
 enum ActionOrderByInput {
@@ -252,6 +265,7 @@ input ActionUpdateInput {
   description: String
   karma: String
   executors: String
+  members: ActionMemberUpdateManyInput
   author: UserUpdateOneInput
 }
 
@@ -504,6 +518,9 @@ input ActionWhereInput {
 
   """All values not ending with the given string."""
   executors_not_ends_with: String
+  members_every: ActionMemberWhereInput
+  members_some: ActionMemberWhereInput
+  members_none: ActionMemberWhereInput
   author: UserWhereInput
 }
 
@@ -519,12 +536,156 @@ type AggregateActionMember {
   count: Int!
 }
 
+type AggregateAuthPayload {
+  count: Int!
+}
+
 type AggregatePerson {
   count: Int!
 }
 
 type AggregateUser {
   count: Int!
+}
+
+type AuthPayload {
+  token: String!
+  user(where: UserWhereInput): User!
+}
+
+"""A connection to a list of items."""
+type AuthPayloadConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AuthPayloadEdge]!
+  aggregate: AggregateAuthPayload!
+}
+
+input AuthPayloadCreateInput {
+  token: String!
+  user: UserCreateOneInput!
+}
+
+"""An edge in a connection."""
+type AuthPayloadEdge {
+  """The item at the end of the edge."""
+  node: AuthPayload!
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+enum AuthPayloadOrderByInput {
+  token_ASC
+  token_DESC
+  id_ASC
+  id_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type AuthPayloadPreviousValues {
+  token: String!
+}
+
+type AuthPayloadSubscriptionPayload {
+  mutation: MutationType!
+  node: AuthPayload
+  updatedFields: [String!]
+  previousValues: AuthPayloadPreviousValues
+}
+
+input AuthPayloadSubscriptionWhereInput {
+  """Logical AND on all given filters."""
+  AND: [AuthPayloadSubscriptionWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [AuthPayloadSubscriptionWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [AuthPayloadSubscriptionWhereInput!]
+
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: AuthPayloadWhereInput
+}
+
+input AuthPayloadUpdateInput {
+  token: String
+  user: UserUpdateOneInput
+}
+
+input AuthPayloadWhereInput {
+  """Logical AND on all given filters."""
+  AND: [AuthPayloadWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [AuthPayloadWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [AuthPayloadWhereInput!]
+  token: String
+
+  """All values that are not equal to given value."""
+  token_not: String
+
+  """All values that are contained in given list."""
+  token_in: [String!]
+
+  """All values that are not contained in given list."""
+  token_not_in: [String!]
+
+  """All values less than the given value."""
+  token_lt: String
+
+  """All values less than or equal the given value."""
+  token_lte: String
+
+  """All values greater than the given value."""
+  token_gt: String
+
+  """All values greater than or equal the given value."""
+  token_gte: String
+
+  """All values containing the given string."""
+  token_contains: String
+
+  """All values not containing the given string."""
+  token_not_contains: String
+
+  """All values starting with the given string."""
+  token_starts_with: String
+
+  """All values not starting with the given string."""
+  token_not_starts_with: String
+
+  """All values ending with the given string."""
+  token_ends_with: String
+
+  """All values not ending with the given string."""
+  token_not_ends_with: String
+  user: UserWhereInput
 }
 
 type BatchPayload {
@@ -540,26 +701,29 @@ scalar Long
 
 type Mutation {
   createAction(data: ActionCreateInput!): Action!
+  createAuthPayload(data: AuthPayloadCreateInput!): AuthPayload!
   createActionMember(data: ActionMemberCreateInput!): ActionMember!
-  createPerson(data: PersonCreateInput!): Person!
   createUser(data: UserCreateInput!): User!
+  createPerson(data: PersonCreateInput!): Person!
   updateAction(data: ActionUpdateInput!, where: ActionWhereUniqueInput!): Action
-  updatePerson(data: PersonUpdateInput!, where: PersonWhereUniqueInput!): Person
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
+  updatePerson(data: PersonUpdateInput!, where: PersonWhereUniqueInput!): Person
   deleteAction(where: ActionWhereUniqueInput!): Action
-  deletePerson(where: PersonWhereUniqueInput!): Person
   deleteUser(where: UserWhereUniqueInput!): User
+  deletePerson(where: PersonWhereUniqueInput!): Person
   upsertAction(where: ActionWhereUniqueInput!, create: ActionCreateInput!, update: ActionUpdateInput!): Action!
-  upsertPerson(where: PersonWhereUniqueInput!, create: PersonCreateInput!, update: PersonUpdateInput!): Person!
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
+  upsertPerson(where: PersonWhereUniqueInput!, create: PersonCreateInput!, update: PersonUpdateInput!): Person!
   updateManyActions(data: ActionUpdateInput!, where: ActionWhereInput): BatchPayload!
+  updateManyAuthPayloads(data: AuthPayloadUpdateInput!, where: AuthPayloadWhereInput): BatchPayload!
   updateManyActionMembers(data: ActionMemberUpdateInput!, where: ActionMemberWhereInput): BatchPayload!
-  updateManyPersons(data: PersonUpdateInput!, where: PersonWhereInput): BatchPayload!
   updateManyUsers(data: UserUpdateInput!, where: UserWhereInput): BatchPayload!
+  updateManyPersons(data: PersonUpdateInput!, where: PersonWhereInput): BatchPayload!
   deleteManyActions(where: ActionWhereInput): BatchPayload!
+  deleteManyAuthPayloads(where: AuthPayloadWhereInput): BatchPayload!
   deleteManyActionMembers(where: ActionMemberWhereInput): BatchPayload!
-  deleteManyPersons(where: PersonWhereInput): BatchPayload!
   deleteManyUsers(where: UserWhereInput): BatchPayload!
+  deleteManyPersons(where: PersonWhereInput): BatchPayload!
 }
 
 enum MutationType {
@@ -926,16 +1090,18 @@ input PersonWhereUniqueInput {
 
 type Query {
   actions(where: ActionWhereInput, orderBy: ActionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Action]!
+  authPayloads(where: AuthPayloadWhereInput, orderBy: AuthPayloadOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [AuthPayload]!
   actionMembers(where: ActionMemberWhereInput, orderBy: ActionMemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [ActionMember]!
-  persons(where: PersonWhereInput, orderBy: PersonOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Person]!
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
+  persons(where: PersonWhereInput, orderBy: PersonOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Person]!
   action(where: ActionWhereUniqueInput!): Action
-  person(where: PersonWhereUniqueInput!): Person
   user(where: UserWhereUniqueInput!): User
+  person(where: PersonWhereUniqueInput!): Person
   actionsConnection(where: ActionWhereInput, orderBy: ActionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ActionConnection!
+  authPayloadsConnection(where: AuthPayloadWhereInput, orderBy: AuthPayloadOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): AuthPayloadConnection!
   actionMembersConnection(where: ActionMemberWhereInput, orderBy: ActionMemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ActionMemberConnection!
-  personsConnection(where: PersonWhereInput, orderBy: PersonOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PersonConnection!
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
+  personsConnection(where: PersonWhereInput, orderBy: PersonOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PersonConnection!
 
   """Fetches an object given its ID"""
   node(
@@ -946,13 +1112,17 @@ type Query {
 
 type Subscription {
   action(where: ActionSubscriptionWhereInput): ActionSubscriptionPayload
+  authPayload(where: AuthPayloadSubscriptionWhereInput): AuthPayloadSubscriptionPayload
   actionMember(where: ActionMemberSubscriptionWhereInput): ActionMemberSubscriptionPayload
-  person(where: PersonSubscriptionWhereInput): PersonSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+  person(where: PersonSubscriptionWhereInput): PersonSubscriptionPayload
 }
 
 type User implements Node {
   id: ID!
+  email: String!
+  nickname: String
+  password: String!
   name: String!
 }
 
@@ -967,6 +1137,9 @@ type UserConnection {
 }
 
 input UserCreateInput {
+  email: String!
+  nickname: String
+  password: String!
   name: String!
 }
 
@@ -987,6 +1160,12 @@ type UserEdge {
 enum UserOrderByInput {
   id_ASC
   id_DESC
+  email_ASC
+  email_DESC
+  nickname_ASC
+  nickname_DESC
+  password_ASC
+  password_DESC
   name_ASC
   name_DESC
   updatedAt_ASC
@@ -997,6 +1176,9 @@ enum UserOrderByInput {
 
 type UserPreviousValues {
   id: ID!
+  email: String!
+  nickname: String
+  password: String!
   name: String!
 }
 
@@ -1040,10 +1222,16 @@ input UserSubscriptionWhereInput {
 }
 
 input UserUpdateDataInput {
+  email: String
+  nickname: String
+  password: String
   name: String
 }
 
 input UserUpdateInput {
+  email: String
+  nickname: String
+  password: String
   name: String
 }
 
@@ -1109,6 +1297,126 @@ input UserWhereInput {
 
   """All values not ending with the given string."""
   id_not_ends_with: ID
+  email: String
+
+  """All values that are not equal to given value."""
+  email_not: String
+
+  """All values that are contained in given list."""
+  email_in: [String!]
+
+  """All values that are not contained in given list."""
+  email_not_in: [String!]
+
+  """All values less than the given value."""
+  email_lt: String
+
+  """All values less than or equal the given value."""
+  email_lte: String
+
+  """All values greater than the given value."""
+  email_gt: String
+
+  """All values greater than or equal the given value."""
+  email_gte: String
+
+  """All values containing the given string."""
+  email_contains: String
+
+  """All values not containing the given string."""
+  email_not_contains: String
+
+  """All values starting with the given string."""
+  email_starts_with: String
+
+  """All values not starting with the given string."""
+  email_not_starts_with: String
+
+  """All values ending with the given string."""
+  email_ends_with: String
+
+  """All values not ending with the given string."""
+  email_not_ends_with: String
+  nickname: String
+
+  """All values that are not equal to given value."""
+  nickname_not: String
+
+  """All values that are contained in given list."""
+  nickname_in: [String!]
+
+  """All values that are not contained in given list."""
+  nickname_not_in: [String!]
+
+  """All values less than the given value."""
+  nickname_lt: String
+
+  """All values less than or equal the given value."""
+  nickname_lte: String
+
+  """All values greater than the given value."""
+  nickname_gt: String
+
+  """All values greater than or equal the given value."""
+  nickname_gte: String
+
+  """All values containing the given string."""
+  nickname_contains: String
+
+  """All values not containing the given string."""
+  nickname_not_contains: String
+
+  """All values starting with the given string."""
+  nickname_starts_with: String
+
+  """All values not starting with the given string."""
+  nickname_not_starts_with: String
+
+  """All values ending with the given string."""
+  nickname_ends_with: String
+
+  """All values not ending with the given string."""
+  nickname_not_ends_with: String
+  password: String
+
+  """All values that are not equal to given value."""
+  password_not: String
+
+  """All values that are contained in given list."""
+  password_in: [String!]
+
+  """All values that are not contained in given list."""
+  password_not_in: [String!]
+
+  """All values less than the given value."""
+  password_lt: String
+
+  """All values less than or equal the given value."""
+  password_lte: String
+
+  """All values greater than the given value."""
+  password_gt: String
+
+  """All values greater than or equal the given value."""
+  password_gte: String
+
+  """All values containing the given string."""
+  password_contains: String
+
+  """All values not containing the given string."""
+  password_not_contains: String
+
+  """All values starting with the given string."""
+  password_starts_with: String
+
+  """All values not starting with the given string."""
+  password_not_starts_with: String
+
+  """All values ending with the given string."""
+  password_ends_with: String
+
+  """All values not ending with the given string."""
+  password_not_ends_with: String
   name: String
 
   """All values that are not equal to given value."""
@@ -1149,6 +1457,9 @@ input UserWhereInput {
 
   """All values not ending with the given string."""
   name_not_ends_with: String
+  _MagicalBackRelation_AuthPayloadToUser_every: AuthPayloadWhereInput
+  _MagicalBackRelation_AuthPayloadToUser_some: AuthPayloadWhereInput
+  _MagicalBackRelation_AuthPayloadToUser_none: AuthPayloadWhereInput
   _MagicalBackRelation_PersonToUser_every: PersonWhereInput
   _MagicalBackRelation_PersonToUser_some: PersonWhereInput
   _MagicalBackRelation_PersonToUser_none: PersonWhereInput

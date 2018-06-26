@@ -1,6 +1,11 @@
 type User {
   id: ID! @unique
+  email: String!
+  nickname: String
+  password: String!
   name: String!
+#  createdAt: DateTime!
+#  updatedAt: DateTime!
 }
 
 type Person {
@@ -19,11 +24,16 @@ type Action {
   description: String!
   karma: String!
   executors: String!
-#  members: [ActionMember!]!
+  #  members: [ActionMember!]!
   author: User!
 }
 
 type ActionMember {
   person: Person!
   side: String!
+}
+
+type AuthPayload {
+  token: String!
+  user: User!
 }
