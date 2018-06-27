@@ -10,12 +10,12 @@ const { getUserId } = require('./utils');
 const resolvers = {
   Query: {
     user: (_, args, context, info) => {
-      const id = getUserId(context);
+      const userId = getUserId(context);
 
       return context.prisma.query.user(
         {
           where: {
-            id: id,
+            id: userId,
           },
         },
         info,
@@ -31,25 +31,28 @@ const resolvers = {
     },
 
     person: (_, args, context, info) => {
-      const authorId = getUserId(context);
+      const userId = getUserId(context);
 
       return context.prisma.query.person(
         {
           where: {
-            authorId: authorId,
+            id: args.id,
+            author: {
+              id: userId,
+            },
           },
         },
         info,
       );
     },
     persons: (_, args, context, info) => {
-      const authorId = getUserId(context);
+      const userId = getUserId(context);
 
       return context.prisma.query.persons(
         {
           where: {
             author: {
-              authorId: authorId,
+              id: userId,
             },
           },
         },
@@ -58,25 +61,28 @@ const resolvers = {
     },
 
     action: (_, args, context, info) => {
-      const authorId = getUserId(context);
+      const userId = getUserId(context);
 
       return context.prisma.query.action(
         {
           where: {
-            authorId: authorId,
+            id: args.id,
+            author: {
+              id: userId,
+            },
           },
         },
         info,
       );
     },
     actions: (_, args, context, info) => {
-      const authorId = getUserId(context);
+      const userId = getUserId(context);
 
       return context.prisma.query.actions(
         {
           where: {
             author: {
-              id: authorId,
+              id: userId,
             },
           },
         },
@@ -89,9 +95,9 @@ const resolvers = {
       const password = await bcrypt.hash(args.password, 10);
       const user = await context.prisma.mutation.createUser({
         data: {
-          email: args.email,
-          nickname: args.nickname,
+          email: args.email.toLowerCase(),
           password: password,
+          nickname: args.nickname.toLowerCase(),
           name: args.name,
         },
       });
@@ -103,16 +109,37 @@ const resolvers = {
     },
 
     login: async(_, args, context, info) => {
-      const user = await context.prisma.query.user(
+      // const user = await context.prisma.query.user(
+      //   {
+      //     where: {
+      //       OR: [
+      //         { email: args.login, },
+      //         { nickname: args.login },
+      //       ],
+      //     },
+      //   },
+      // );
+
+      let user = await context.prisma.query.user(
         {
           where: {
-            email: args.email,
+            email: args.login.toLowerCase(),
           },
         },
       );
 
       if (!user) {
-        throw new Error(`No such user found for email: ${args.email}`);
+        user = await context.prisma.query.user(
+          {
+            where: {
+              nickname: args.login.toLowerCase(),
+            },
+          },
+        );
+
+        if (!user) {
+          throw new Error(`No such user found`);
+        }
       }
 
       const valid = await bcrypt.compare(args.password, user.password);
@@ -127,34 +154,38 @@ const resolvers = {
       };
     },
 
-    createUser: (_, args, context, info) => {
-      return context.prisma.mutation.createUser(
+    updateUser: async(_, args, context, info) => {
+      const userId = getUserId(context);
+
+      const user = await context.prisma.query.user(
         {
-          data: {
-            name: args.name,
+          where: {
+            id: userId,
           },
         },
-        info,
       );
-    },
-    updateUser: (_, args, context, info) => {
+
       return context.prisma.mutation.updateUser(
         {
           where: {
-            id: args.id,
+            id: userId,
           },
           data: {
-            name: args.name,
+            email: args.email || user.email.toLowerCase(),
+            name: args.name || user.name,
+            nickname: args.nickname || user.nickname.toLowerCase(),
           },
         },
         info,
       );
     },
     deleteUser: (_, args, context, info) => {
+      const userId = getUserId(context);
+
       return context.prisma.mutation.deleteUser(
         {
           where: {
-            id: args.id,
+            id: userId,
           },
         },
         info,
@@ -162,16 +193,18 @@ const resolvers = {
     },
 
     createPerson: (_, args, context, info) => {
+      const userId = getUserId(context);
+
       return context.prisma.mutation.createPerson(
         {
           data: {
             name: args.name,
             position: args.position,
             description: args.description,
-            karma: args.karma,
+            karma: 0,
             author: {
               connect: {
-                id: args.authorId,
+                id: userId,
               },
             },
           },
@@ -179,34 +212,73 @@ const resolvers = {
         info,
       );
     },
-    updatePerson: (_, args, context, info) => {
-      return context.prisma.mutation.updatePerson(
+    updatePerson: async(_, args, context, info) => {
+      const userId = getUserId(context);
+
+      const person = await context.prisma.query.person(
         {
           where: {
             id: args.id,
+            author: {
+              id: userId,
+            },
+          },
+        },
+      );
+
+      return context.prisma.mutation.updatePerson(
+        {
+          where: {
+            id: args.userId,
           },
           data: {
-            name: args.name,
-            position: args.position,
-            description: args.description,
-            karma: args.karma,
+            name: args.name || person.name,
+            position: args.position || person.position,
+            description: args.description || person.description,
+            karma: args.karma || person.karma,
           },
         },
         info,
       );
     },
     deletePerson: (_, args, context, info) => {
+      const userId = getUserId(context);
+
       return context.prisma.mutation.deletePerson(
         {
           where: {
             id: args.id,
+            author: {
+              id: userId,
+            },
           },
         },
         info,
       );
     },
 
-    createAction: (_, args, context, info) => {
+    createAction: async(_, args, context, info) => {
+      // const members = await args.members.map(async(member) => {
+      //   const actionMember = await context.prisma.mutation.createActionMember(
+      //     {
+      //       data: {
+      //         person: {
+      //           connect: {
+      //             id: member.personId,
+      //           },
+      //         },
+      //         side: member.side,
+      //       },
+      //     },
+      //   );
+      //
+      //   return actionMember;
+      // });
+      //
+      // const resolvedMembers = await Promise.all(members);
+
+      const userId = getUserId(context);
+
       return context.prisma.mutation.createAction(
         {
           data: {
@@ -215,19 +287,10 @@ const resolvers = {
             description: args.description,
             karma: args.karma,
             executors: args.executors,
-            // members: args.members.map((member) => {
-            //   return {
-            //     person: {
-            //       connect: {
-            //         id: member.personId,
-            //       },
-            //     },
-            //     side: member.side,
-            //   };
-            // }),
+            // members: resolvedMembers,
             author: {
               connect: {
-                id: args.authorId,
+                id: userId,
               },
             },
           },
@@ -235,38 +298,66 @@ const resolvers = {
         info,
       );
     },
-    updateAction: (_, args, context, info) => {
+    updateAction: async(_, args, context, info) => {
+      // const members = await args.members.map(async(member) => {
+      //   const actionMember = await context.prisma.mutation.createActionMember(
+      //     {
+      //       data: {
+      //         person: {
+      //           connect: {
+      //             id: member.personId,
+      //           },
+      //         },
+      //         side: member.side,
+      //       },
+      //     },
+      //   );
+      //
+      //   return actionMember;
+      // });
+      //
+      // const resolvedMembers = await Promise.all(members);
+
+      const userId = getUserId(context);
+
+      const action = await context.prisma.query.action(
+        {
+          where: {
+            id: args.id,
+            author: {
+              id: userId,
+            },
+          },
+        },
+      );
+
       return context.prisma.mutation.updateAction(
         {
           where: {
             id: args.id,
           },
           data: {
-            title: args.title,
-            date: args.date,
-            description: args.description,
-            karma: args.karma,
-            executors: args.executors,
-            // members: args.members.map((member) => {
-            //   return {
-            //     person: {
-            //       connect: {
-            //         id: member.personId,
-            //       },
-            //     },
-            //     side: member.side,
-            //   };
-            // }),
+            title: args.title || action.title,
+            date: args.date || action.date,
+            description: args.description || action.description,
+            karma: args.karma || action.karma,
+            executors: args.executors || action.executors,
+            // members: resolvedMembers,
           },
         },
         info,
       );
     },
     deleteAction: (_, args, context, info) => {
+      const userId = getUserId(context);
+
       return context.prisma.mutation.deleteAction(
         {
           where: {
             id: args.id,
+            author: {
+              id: userId,
+            },
           },
         },
         info,

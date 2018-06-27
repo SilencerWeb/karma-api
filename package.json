@@ -15,10 +15,10 @@
   },
   "scripts": {
     "start": "nodemon src/index.js",
-    "deploy:prisma": "yarn prisma deploy",
-    "deploy:prisma -f": "yarn prisma deploy -f",
-    "deploy:heroku": "git push heroku master -f",
-    "deploy": "yarn 'deploy:prisma' && yarn 'deploy:heroku'",
-    "get-schema": "yarn graphql get-schema -p prisma"
+    "d:p": "yarn prisma deploy -f",
+    "d:h": "git push heroku master -f",
+    "d": "yarn 'd:p' && yarn 'd:h'",
+    "deploy": "yarn 'd:p' && yarn 'd:h'",
+    "g-s": "yarn graphql get-schema -p prisma"
   }
 }
