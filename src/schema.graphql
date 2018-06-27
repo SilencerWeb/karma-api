@@ -14,10 +14,10 @@ type Query {
   user: User!
   users: [User!]!
 
-  person: Person!
+  person(id: ID!): Person!
   persons: [Person!]!
 
-  action: Action!
+  action(id: ID!): Action!
   actions: [Action!]!
 }
 
@@ -26,63 +26,48 @@ type Mutation {
   signup(
     email: String!
     password: String!
-    name: String!
-    nickname: String
-    #    createdAt: DateTime!
-    #    updatedAt: DateTime!
+    nickname: String!
+    name: String
   ): AuthPayload!
-  login(email: String! password: String!): AuthPayload!
+  login(login: String! password: String!): AuthPayload!
 
-  createUser(
-    email: String!
-    nickname: String
-    name: String!
-    #    createdAt: DateTime!
-    #    updatedAt: DateTime!
-  ): User
   updateUser(
-    id: ID!
-    email: String!
+    email: String
+    name: String
     nickname: String
-    name: String!
-    #    createdAt: DateTime!
-    #    updatedAt: DateTime!
-  ): User
-  deleteUser(id: ID!): User
+  ): User!
+  deleteUser: User!
 
   createPerson(
     name: String!
     position: String!
-    description: String!
-    karma: Int!
-    authorId: ID!
-  ): Person
+    description: String
+  ): Person!
   updatePerson(
     id: ID!
-    name: String!
-    position: String!
-    description: String!
-    karma: Int!
-  ): Person
+    name: String
+    position: String
+    description: String
+    karma: Int
+  ): Person!
   deletePerson(id: ID!): Person
 
   createAction(
     title: String!
     date: String!
-    description: String!
+    description: String
     karma: String!
     executors: String!
-    #    members: [ActionMemberInput!]!
-    authorId: ID!
-  ): Action
+#    members: [ActionMemberInput!]!
+  ): Action!
   updateAction(
     id: ID!
-    title: String!
-    date: String!
-    description: String!
-    karma: String!
-    executors: String!
-    #    members: [ActionMemberInput!]!
-  ): Action
-  deleteAction(id: ID!): Action
+    title: String
+    date: String
+    description: String
+    karma: String
+    executors: String
+#    members: [ActionMemberInput!]!
+  ): Action!
+  deleteAction(id: ID!): Action!
 }

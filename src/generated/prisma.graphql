@@ -1,11 +1,11 @@
 # source: https://eu1.prisma.sh/silencerweb-d7143d/karma-api/develop
-# timestamp: Tue Jun 26 2018 21:46:50 GMT+0500 (Uzbekistan Standard Time)
+# timestamp: Wed Jun 27 2018 11:01:55 GMT+0500 (Uzbekistan Standard Time)
 
 type Action implements Node {
   id: ID!
   title: String!
   date: String!
-  description: String!
+  description: String
   karma: String!
   executors: String!
   author(where: UserWhereInput): User!
@@ -24,7 +24,7 @@ type ActionConnection {
 input ActionCreateInput {
   title: String!
   date: String!
-  description: String!
+  description: String
   karma: String!
   executors: String!
   author: UserCreateOneInput!
@@ -202,7 +202,7 @@ type ActionPreviousValues {
   id: ID!
   title: String!
   date: String!
-  description: String!
+  description: String
   karma: String!
   executors: String!
 }
@@ -676,6 +676,8 @@ type BatchPayload {
   count: Long!
 }
 
+scalar DateTime
+
 """
 The `Long` scalar type represents non-fractional signed whole numeric values.
 Long can represent values between -(2^63) and 2^63 - 1.
@@ -741,7 +743,7 @@ type Person implements Node {
   name: String!
   position: String!
   karma: Int!
-  description: String!
+  description: String
   author(where: UserWhereInput): User!
 }
 
@@ -759,7 +761,7 @@ input PersonCreateInput {
   name: String!
   position: String!
   karma: Int!
-  description: String!
+  description: String
   author: UserCreateOneInput!
 }
 
@@ -799,7 +801,7 @@ type PersonPreviousValues {
   name: String!
   position: String!
   karma: Int!
-  description: String!
+  description: String
 }
 
 type PersonSubscriptionPayload {
@@ -1105,8 +1107,10 @@ type User implements Node {
   id: ID!
   email: String!
   password: String!
-  name: String!
-  nickname: String
+  nickname: String!
+  name: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 """A connection to a list of items."""
@@ -1122,8 +1126,8 @@ type UserConnection {
 input UserCreateInput {
   email: String!
   password: String!
-  name: String!
-  nickname: String
+  nickname: String!
+  name: String
 }
 
 input UserCreateOneInput {
@@ -1147,22 +1151,24 @@ enum UserOrderByInput {
   email_DESC
   password_ASC
   password_DESC
-  name_ASC
-  name_DESC
   nickname_ASC
   nickname_DESC
-  updatedAt_ASC
-  updatedAt_DESC
+  name_ASC
+  name_DESC
   createdAt_ASC
   createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
 }
 
 type UserPreviousValues {
   id: ID!
   email: String!
   password: String!
-  name: String!
-  nickname: String
+  nickname: String!
+  name: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type UserSubscriptionPayload {
@@ -1207,15 +1213,15 @@ input UserSubscriptionWhereInput {
 input UserUpdateDataInput {
   email: String
   password: String
-  name: String
   nickname: String
+  name: String
 }
 
 input UserUpdateInput {
   email: String
   password: String
-  name: String
   nickname: String
+  name: String
 }
 
 input UserUpdateOneInput {
@@ -1360,46 +1366,6 @@ input UserWhereInput {
 
   """All values not ending with the given string."""
   password_not_ends_with: String
-  name: String
-
-  """All values that are not equal to given value."""
-  name_not: String
-
-  """All values that are contained in given list."""
-  name_in: [String!]
-
-  """All values that are not contained in given list."""
-  name_not_in: [String!]
-
-  """All values less than the given value."""
-  name_lt: String
-
-  """All values less than or equal the given value."""
-  name_lte: String
-
-  """All values greater than the given value."""
-  name_gt: String
-
-  """All values greater than or equal the given value."""
-  name_gte: String
-
-  """All values containing the given string."""
-  name_contains: String
-
-  """All values not containing the given string."""
-  name_not_contains: String
-
-  """All values starting with the given string."""
-  name_starts_with: String
-
-  """All values not starting with the given string."""
-  name_not_starts_with: String
-
-  """All values ending with the given string."""
-  name_ends_with: String
-
-  """All values not ending with the given string."""
-  name_not_ends_with: String
   nickname: String
 
   """All values that are not equal to given value."""
@@ -1440,6 +1406,90 @@ input UserWhereInput {
 
   """All values not ending with the given string."""
   nickname_not_ends_with: String
+  name: String
+
+  """All values that are not equal to given value."""
+  name_not: String
+
+  """All values that are contained in given list."""
+  name_in: [String!]
+
+  """All values that are not contained in given list."""
+  name_not_in: [String!]
+
+  """All values less than the given value."""
+  name_lt: String
+
+  """All values less than or equal the given value."""
+  name_lte: String
+
+  """All values greater than the given value."""
+  name_gt: String
+
+  """All values greater than or equal the given value."""
+  name_gte: String
+
+  """All values containing the given string."""
+  name_contains: String
+
+  """All values not containing the given string."""
+  name_not_contains: String
+
+  """All values starting with the given string."""
+  name_starts_with: String
+
+  """All values not starting with the given string."""
+  name_not_starts_with: String
+
+  """All values ending with the given string."""
+  name_ends_with: String
+
+  """All values not ending with the given string."""
+  name_not_ends_with: String
+  createdAt: DateTime
+
+  """All values that are not equal to given value."""
+  createdAt_not: DateTime
+
+  """All values that are contained in given list."""
+  createdAt_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  createdAt_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  createdAt_lt: DateTime
+
+  """All values less than or equal the given value."""
+  createdAt_lte: DateTime
+
+  """All values greater than the given value."""
+  createdAt_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+
+  """All values that are not equal to given value."""
+  updatedAt_not: DateTime
+
+  """All values that are contained in given list."""
+  updatedAt_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  updatedAt_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  updatedAt_lt: DateTime
+
+  """All values less than or equal the given value."""
+  updatedAt_lte: DateTime
+
+  """All values greater than the given value."""
+  updatedAt_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  updatedAt_gte: DateTime
   _MagicalBackRelation_PersonToUser_every: PersonWhereInput
   _MagicalBackRelation_PersonToUser_some: PersonWhereInput
   _MagicalBackRelation_PersonToUser_none: PersonWhereInput
@@ -1454,4 +1504,5 @@ input UserWhereInput {
 input UserWhereUniqueInput {
   id: ID
   email: String
+  nickname: String
 }
