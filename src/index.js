@@ -103,7 +103,7 @@ const resolvers = {
           name: args.name,
         },
       });
-      
+
       return {
         token: jwt.sign({ userId: user.id }, config.APP_SECRET),
         user,
@@ -111,37 +111,20 @@ const resolvers = {
     },
 
     login: async(_, args, context, info) => {
-      // const user = await context.prisma.query.user(
-      //   {
-      //     where: {
-      //       OR: [
-      //         { email: args.login, },
-      //         { nickname: args.login },
-      //       ],
-      //     },
-      //   },
-      // );
-
-      let user = await context.prisma.query.user(
+      let user = await context.prisma.query.users(
         {
           where: {
-            email: args.login.toLowerCase(),
+            OR: [
+              { email: args.login, },
+              { nickname: args.login },
+            ],
           },
         },
       );
+      user = user[0];
 
       if (!user) {
-        user = await context.prisma.query.user(
-          {
-            where: {
-              nickname: args.login.toLowerCase(),
-            },
-          },
-        );
-
-        if (!user) {
-          throw new Error(`No such user found`);
-        }
+        throw new Error(`No such user found`);
       }
 
       const valid = await bcrypt.compare(args.password, user.password);
