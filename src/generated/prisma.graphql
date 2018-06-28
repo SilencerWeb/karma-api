@@ -1,5 +1,5 @@
-# source: https://eu1.prisma.sh/silencerweb-d7143d/karma-api/develop
-# timestamp: Wed Jun 27 2018 11:01:55 GMT+0500 (Uzbekistan Standard Time)
+# source: https://eu1.prisma.sh/silencerweb-d7143d/karma-api/development
+# timestamp: Thu Jun 28 2018 17:26:01 GMT+0500 (Uzbekistan Standard Time)
 
 type Action implements Node {
   id: ID!
