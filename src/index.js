@@ -103,9 +103,9 @@ const resolvers = {
           name: args.name,
         },
       });
-
+      
       return {
-        token: jwt.sign({ userId: user.id }, process.env.APP_SECRET),
+        token: jwt.sign({ userId: user.id }, config.APP_SECRET),
         user,
       };
     },
@@ -151,7 +151,7 @@ const resolvers = {
       }
 
       return {
-        token: jwt.sign({ userId: user.id }, process.env.APP_SECRET),
+        token: jwt.sign({ userId: user.id }, config.APP_SECRET),
         user,
       };
     },
