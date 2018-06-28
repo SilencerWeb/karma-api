@@ -5,6 +5,8 @@ const { Prisma } = require('prisma-binding');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+const config = require('./config');
+
 const { getUserId } = require('./utils');
 
 const resolvers = {
@@ -378,7 +380,8 @@ const server = new GraphQLServer({
     ...req,
     prisma: new Prisma({
       typeDefs: 'src/generated/prisma.graphql',
-      endpoint: process.env.PRISMA_ENDPOINT,
+      endpoint: config.PRISMA_ENDPOINT,
+      debug: true,
     }),
   }),
 });

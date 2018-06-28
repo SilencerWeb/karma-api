@@ -14,11 +14,10 @@
     "prisma": "^1.10.2"
   },
   "scripts": {
-    "start": "nodemon src/index.js",
-    "d:p": "yarn prisma deploy -f",
-    "d:h": "git push heroku master -f",
-    "d": "yarn 'd:p' && yarn 'd:h'",
-    "deploy": "yarn 'd:p' && yarn 'd:h'",
-    "g-s": "yarn graphql get-schema -p prisma"
+    "start": "NODE_ENV=development nodemon src/index.js",
+    "deploy:p": "NODE_ENV=production prisma deploy -f",
+    "deploy:h": "NODE_ENV=production git push heroku master -f",
+    "deploy": "yarn 'deploy:p' && yarn 'deploy:h'",
+    "get-schema": "graphql get-schema -p prisma --watch"
   }
 }
