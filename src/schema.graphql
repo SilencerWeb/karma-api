@@ -58,7 +58,7 @@ type Mutation {
     description: String
     karma: String!
     executors: String!
-#    members: [ActionMemberInput!]!
+    members: [ActionMemberInput!]!
   ): Action!
   updateAction(
     id: ID!
@@ -67,7 +67,7 @@ type Mutation {
     description: String
     karma: String
     executors: String
-#    members: [ActionMemberInput!]!
+    members: [ActionMemberInput!]
   ): Action!
   deleteAction(id: ID!): Action!
 }

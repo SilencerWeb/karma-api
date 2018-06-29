@@ -39,9 +39,6 @@ const resolvers = {
         {
           where: {
             id: args.id,
-            author: {
-              id: userId,
-            },
           },
         },
         info,
@@ -69,9 +66,6 @@ const resolvers = {
         {
           where: {
             id: args.id,
-            author: {
-              id: userId,
-            },
           },
         },
         info,
@@ -111,7 +105,7 @@ const resolvers = {
     },
 
     login: async(_, args, context, info) => {
-      let user = await context.prisma.query.users(
+      const [user] = await context.prisma.query.users(
         {
           where: {
             OR: [
@@ -121,7 +115,6 @@ const resolvers = {
           },
         },
       );
-      user = user[0];
 
       if (!user) {
         throw new Error(`No such user found`);
@@ -243,26 +236,27 @@ const resolvers = {
     },
 
     createAction: async(_, args, context, info) => {
-      // const members = await args.members.map(async(member) => {
-      //   const actionMember = await context.prisma.mutation.createActionMember(
-      //     {
-      //       data: {
-      //         person: {
-      //           connect: {
-      //             id: member.personId,
-      //           },
-      //         },
-      //         side: member.side,
-      //       },
-      //     },
-      //   );
-      //
-      //   return actionMember;
-      // });
-      //
-      // const resolvedMembers = await Promise.all(members);
-
       const userId = getUserId(context);
+
+      const membersIds = await args.members.map(async(member) => {
+        return await context.prisma.mutation.createActionMember(
+          {
+            data: {
+              person: {
+                connect: {
+                  id: member.personId,
+                },
+              },
+              side: member.side,
+            },
+          },
+          `{
+            id
+          }`,
+        );
+      });
+
+      const resolvedMembersIds = await Promise.all(membersIds);
 
       return context.prisma.mutation.createAction(
         {
@@ -272,7 +266,9 @@ const resolvers = {
             description: args.description,
             karma: args.karma,
             executors: args.executors,
-            // members: resolvedMembers,
+            members: {
+              connect: resolvedMembersIds,
+            },
             author: {
               connect: {
                 id: userId,
@@ -284,36 +280,44 @@ const resolvers = {
       );
     },
     updateAction: async(_, args, context, info) => {
-      // const members = await args.members.map(async(member) => {
-      //   const actionMember = await context.prisma.mutation.createActionMember(
-      //     {
-      //       data: {
-      //         person: {
-      //           connect: {
-      //             id: member.personId,
-      //           },
-      //         },
-      //         side: member.side,
-      //       },
-      //     },
-      //   );
-      //
-      //   return actionMember;
-      // });
-      //
-      // const resolvedMembers = await Promise.all(members);
-
       const userId = getUserId(context);
+
+      const membersIds = await args.members.map(async(member) => {
+        return await context.prisma.mutation.createActionMember(
+          {
+            data: {
+              person: {
+                connect: {
+                  id: member.personId,
+                },
+              },
+              side: member.side,
+            },
+          },
+          `{
+            id
+          }`,
+        );
+      });
+
+      const resolvedMembersIds = await Promise.all(membersIds);
 
       const action = await context.prisma.query.action(
         {
           where: {
             id: args.id,
-            author: {
-              id: userId,
-            },
           },
         },
+        `{
+          title
+          date
+          description
+          karma
+          executors
+          members {
+            id
+          }
+        }`,
       );
 
       return context.prisma.mutation.updateAction(
@@ -327,7 +331,10 @@ const resolvers = {
             description: args.description || action.description,
             karma: args.karma || action.karma,
             executors: args.executors || action.executors,
-            // members: resolvedMembers,
+            members: resolvedMembersIds && {
+              disconnect: action.members,
+              connect: resolvedMembersIds,
+            } || action.members,
           },
         },
         info,
