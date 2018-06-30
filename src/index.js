@@ -356,6 +356,13 @@ const resolvers = {
       );
     },
   },
+  Subscription: {
+    personUpdate: {
+      subscribe: (parent, args, context, info) => {
+        return context.prisma.subscription.person({}, info);
+      },
+    },
+  },
   AuthPayload: {
     user: async({ user: { id } }, args, context, info) => {
       return context.prisma.query.user({ where: { id } }, info);
@@ -370,7 +377,7 @@ const server = new GraphQLServer({
     ...req,
     prisma: new Prisma({
       typeDefs: 'src/generated/prisma.graphql',
-      endpoint: config.PRISMA_ENDPOINT,
+      endpoint: `https://${config.PRISMA_ENDPOINT}`,
       secret: config.PRISMA_SECRET,
     }),
   }),

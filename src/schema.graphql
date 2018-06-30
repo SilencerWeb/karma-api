@@ -1,7 +1,4 @@
-# import User from './generated/prisma.graphql'
-# import Person from './generated/prisma.graphql'
-# import Action from './generated/prisma.graphql'
-# import AuthPayload from './generated/prisma.graphql'
+# import User, Person, Action, AuthPayload, PersonSubscriptionPayload from './generated/prisma.graphql'
 
 
 input ActionMemberInput {
@@ -70,4 +67,8 @@ type Mutation {
     members: [ActionMemberInput!]
   ): Action!
   deleteAction(id: ID!): Action!
+}
+
+type Subscription {
+  personUpdate: PersonSubscriptionPayload
 }

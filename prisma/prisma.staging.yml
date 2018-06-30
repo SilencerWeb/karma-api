@@ -1,4 +1,4 @@
-endpoint: ${env:STAGING_PRISMA_ENDPOINT}
+endpoint: https://${env:STAGING_PRISMA_ENDPOINT}
 secret: ${env:STAGING_PRISMA_SECRET}
 datamodel: datamodel.graphql
 hooks:
