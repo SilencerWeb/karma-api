@@ -2,7 +2,8 @@
 
 
 input ActionMemberInput {
-  personId: ID!
+  personId: ID
+  isUser: Boolean!
   side: String!
 }
 

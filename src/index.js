@@ -239,21 +239,40 @@ const resolvers = {
       const userId = getUserId(context);
 
       const membersIds = await args.members.map(async(member) => {
-        return await context.prisma.mutation.createActionMember(
-          {
-            data: {
-              person: {
-                connect: {
-                  id: member.personId,
+        return member.isUser ?
+          await context.prisma.mutation.createActionMember(
+            {
+              data: {
+                user: {
+                  connect: {
+                    id: userId,
+                  },
                 },
+                isUser: true,
+                side: member.side,
               },
-              side: member.side,
             },
-          },
-          `{
+            `{
             id
           }`,
-        );
+          )
+          :
+          await context.prisma.mutation.createActionMember(
+            {
+              data: {
+                person: {
+                  connect: {
+                    id: member.personId,
+                  },
+                },
+                isUser: false,
+                side: member.side,
+              },
+            },
+            `{
+            id
+          }`,
+          );
       });
 
       const resolvedMembersIds = await Promise.all(membersIds);

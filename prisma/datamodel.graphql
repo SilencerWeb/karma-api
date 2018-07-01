@@ -30,7 +30,9 @@ type Action {
 
 type ActionMember {
   id: ID! @unique
-  person: Person!
+  person: Person
+  user: User
+  isUser: Boolean!
   side: String!
 }
 

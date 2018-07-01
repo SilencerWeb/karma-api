@@ -1,5 +1,5 @@
 # source: https://eu1.prisma.sh/silencerweb-d7143d/karma-api/development
-# timestamp: Fri Jun 29 2018 11:04:01 GMT+0500 (Uzbekistan Standard Time)
+# timestamp: Sun Jul 01 2018 10:33:05 GMT+0500 (Uzbekistan Standard Time)
 
 type Action implements Node {
   id: ID!
@@ -43,7 +43,9 @@ type ActionEdge {
 
 type ActionMember implements Node {
   id: ID!
-  person(where: PersonWhereInput): Person!
+  person(where: PersonWhereInput): Person
+  user(where: UserWhereInput): User
+  isUser: Boolean!
   side: String!
 }
 
@@ -58,8 +60,10 @@ type ActionMemberConnection {
 }
 
 input ActionMemberCreateInput {
+  isUser: Boolean!
   side: String!
-  person: PersonCreateOneInput!
+  person: PersonCreateOneInput
+  user: UserCreateOneInput
 }
 
 input ActionMemberCreateManyInput {
@@ -79,6 +83,8 @@ type ActionMemberEdge {
 enum ActionMemberOrderByInput {
   id_ASC
   id_DESC
+  isUser_ASC
+  isUser_DESC
   side_ASC
   side_DESC
   updatedAt_ASC
@@ -89,6 +95,7 @@ enum ActionMemberOrderByInput {
 
 type ActionMemberPreviousValues {
   id: ID!
+  isUser: Boolean!
   side: String!
 }
 
@@ -132,13 +139,17 @@ input ActionMemberSubscriptionWhereInput {
 }
 
 input ActionMemberUpdateDataInput {
+  isUser: Boolean
   side: String
   person: PersonUpdateOneInput
+  user: UserUpdateOneInput
 }
 
 input ActionMemberUpdateInput {
+  isUser: Boolean
   side: String
   person: PersonUpdateOneInput
+  user: UserUpdateOneInput
 }
 
 input ActionMemberUpdateManyInput {
@@ -210,6 +221,10 @@ input ActionMemberWhereInput {
 
   """All values not ending with the given string."""
   id_not_ends_with: ID
+  isUser: Boolean
+
+  """All values that are not equal to given value."""
+  isUser_not: Boolean
   side: String
 
   """All values that are not equal to given value."""
@@ -251,6 +266,7 @@ input ActionMemberWhereInput {
   """All values not ending with the given string."""
   side_not_ends_with: String
   person: PersonWhereInput
+  user: UserWhereInput
   _MagicalBackRelation_ActionToActionMember_every: ActionWhereInput
   _MagicalBackRelation_ActionToActionMember_some: ActionWhereInput
   _MagicalBackRelation_ActionToActionMember_none: ActionWhereInput
@@ -950,6 +966,7 @@ input PersonUpdateInput {
 input PersonUpdateOneInput {
   create: PersonCreateInput
   connect: PersonWhereUniqueInput
+  disconnect: Boolean
   delete: Boolean
   update: PersonUpdateDataInput
   upsert: PersonUpsertNestedInput
@@ -1579,6 +1596,9 @@ input UserWhereInput {
 
   """All values greater than or equal the given value."""
   updatedAt_gte: DateTime
+  _MagicalBackRelation_ActionMemberToUser_every: ActionMemberWhereInput
+  _MagicalBackRelation_ActionMemberToUser_some: ActionMemberWhereInput
+  _MagicalBackRelation_ActionMemberToUser_none: ActionMemberWhereInput
   _MagicalBackRelation_AuthPayloadToUser_every: AuthPayloadWhereInput
   _MagicalBackRelation_AuthPayloadToUser_some: AuthPayloadWhereInput
   _MagicalBackRelation_AuthPayloadToUser_none: AuthPayloadWhereInput
