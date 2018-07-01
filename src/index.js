@@ -253,8 +253,8 @@ const resolvers = {
               },
             },
             `{
-            id
-          }`,
+              id
+            }`,
           )
           :
           await context.prisma.mutation.createActionMember(
@@ -270,12 +270,38 @@ const resolvers = {
               },
             },
             `{
-            id
-          }`,
+              id
+            }`,
           );
       });
 
       const resolvedMembersIds = await Promise.all(membersIds);
+
+      await args.members.forEach(async(member) => {
+        if (member.isUser || member.side !== args.executors) return;
+
+        const person = await context.prisma.query.person(
+          {
+            where: {
+              id: member.personId,
+            },
+          },
+          `{
+            karma
+          }`,
+        );
+
+        await context.prisma.mutation.updatePerson(
+          {
+            where: {
+              id: member.personId,
+            },
+            data: {
+              karma: args.karma === 'positive' ? person.karma + 1 : person.karma - 1,
+            },
+          },
+        );
+      });
 
       return context.prisma.mutation.createAction(
         {
