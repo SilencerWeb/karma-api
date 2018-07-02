@@ -190,30 +190,19 @@ const resolvers = {
         info,
       );
     },
-    updatePerson: async(_, args, context, info) => {
+    updatePerson: (_, args, context, info) => {
       const userId = getUserId(context);
-
-      const person = await context.prisma.query.person(
-        {
-          where: {
-            id: args.id,
-            author: {
-              id: userId,
-            },
-          },
-        },
-      );
 
       return context.prisma.mutation.updatePerson(
         {
           where: {
-            id: args.userId,
+            id: args.id,
           },
           data: {
-            name: args.name || person.name,
-            position: args.position || person.position,
-            description: args.description || person.description,
-            karma: args.karma || person.karma,
+            name: args.name,
+            position: args.position,
+            description: args.description,
+            karma: args.karma,
           },
         },
         info,
@@ -226,9 +215,6 @@ const resolvers = {
         {
           where: {
             id: args.id,
-            author: {
-              id: userId,
-            },
           },
         },
         info,
@@ -328,21 +314,40 @@ const resolvers = {
       const userId = getUserId(context);
 
       const membersIds = await args.members.map(async(member) => {
-        return await context.prisma.mutation.createActionMember(
-          {
-            data: {
-              person: {
-                connect: {
-                  id: member.personId,
+        return member.isUser ?
+          await context.prisma.mutation.createActionMember(
+            {
+              data: {
+                user: {
+                  connect: {
+                    id: userId,
+                  },
                 },
+                isUser: true,
+                side: member.side,
               },
-              side: member.side,
             },
-          },
-          `{
-            id
-          }`,
-        );
+            `{
+              id
+            }`,
+          )
+          :
+          await context.prisma.mutation.createActionMember(
+            {
+              data: {
+                person: {
+                  connect: {
+                    id: member.personId,
+                  },
+                },
+                isUser: false,
+                side: member.side,
+              },
+            },
+            `{
+              id
+            }`,
+          );
       });
 
       const resolvedMembersIds = await Promise.all(membersIds);
@@ -354,36 +359,43 @@ const resolvers = {
           },
         },
         `{
-          title
-          date
-          description
-          karma
-          executors
           members {
             id
           }
         }`,
       );
 
-      return context.prisma.mutation.updateAction(
+      const updatedAction = await context.prisma.mutation.updateAction(
         {
           where: {
             id: args.id,
           },
           data: {
-            title: args.title || action.title,
-            date: args.date || action.date,
-            description: args.description || action.description,
-            karma: args.karma || action.karma,
-            executors: args.executors || action.executors,
-            members: resolvedMembersIds && {
+            title: args.title,
+            date: args.date,
+            description: args.description,
+            karma: args.karma,
+            executors: args.executors,
+            members: {
               disconnect: action.members,
               connect: resolvedMembersIds,
-            } || action.members,
+            },
           },
         },
         info,
       );
+
+      await action.members.map(async(member) => {
+        return await context.prisma.mutation.deleteActionMember(
+          {
+            where: {
+              id: member.id,
+            },
+          },
+        );
+      });
+
+      return updatedAction;
     },
     deleteAction: (_, args, context, info) => {
       const userId = getUserId(context);
