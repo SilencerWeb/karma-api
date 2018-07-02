@@ -404,9 +404,6 @@ const resolvers = {
         {
           where: {
             id: args.id,
-            author: {
-              id: userId,
-            },
           },
         },
         info,
