@@ -78,6 +78,7 @@ type Mutation {
   deleteAction(id: ID!): Action!
 }
 
+
 type Subscription {
   personCreated: PersonSubscriptionPayload!
   personUpdated: PersonSubscriptionPayload!

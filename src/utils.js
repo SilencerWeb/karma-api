@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 
 const config = require('./config');
 
+
 const getUserId = (context) => {
   const Authorization = context.request.get('Authorization');
 
@@ -14,6 +15,7 @@ const getUserId = (context) => {
 
   throw new Error('Not authorized');
 };
+
 
 module.exports = {
   getUserId,

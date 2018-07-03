@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 
 const { getUserId } = require('../../utils');
 
+const config = require('../../config');
+
 
 const signup = async(_, args, context, info) => {
   const password = await bcrypt.hash(args.password, 10);
