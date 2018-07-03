@@ -1,5 +1,5 @@
 # source: https://eu1.prisma.sh/silencerweb-d7143d/karma-api/development
-# timestamp: Thu Jun 28 2018 17:26:01 GMT+0500 (Uzbekistan Standard Time)
+# timestamp: Sun Jul 01 2018 10:33:05 GMT+0500 (Uzbekistan Standard Time)
 
 type Action implements Node {
   id: ID!
@@ -8,6 +8,7 @@ type Action implements Node {
   description: String
   karma: String!
   executors: String!
+  members(where: ActionMemberWhereInput, orderBy: ActionMemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [ActionMember!]
   author(where: UserWhereInput): User!
 }
 
@@ -27,6 +28,7 @@ input ActionCreateInput {
   description: String
   karma: String!
   executors: String!
+  members: ActionMemberCreateManyInput
   author: UserCreateOneInput!
 }
 
@@ -39,8 +41,11 @@ type ActionEdge {
   cursor: String!
 }
 
-type ActionMember {
-  person(where: PersonWhereInput): Person!
+type ActionMember implements Node {
+  id: ID!
+  person(where: PersonWhereInput): Person
+  user(where: UserWhereInput): User
+  isUser: Boolean!
   side: String!
 }
 
@@ -55,8 +60,15 @@ type ActionMemberConnection {
 }
 
 input ActionMemberCreateInput {
+  isUser: Boolean!
   side: String!
-  person: PersonCreateOneInput!
+  person: PersonCreateOneInput
+  user: UserCreateOneInput
+}
+
+input ActionMemberCreateManyInput {
+  create: [ActionMemberCreateInput!]
+  connect: [ActionMemberWhereUniqueInput!]
 }
 
 """An edge in a connection."""
@@ -69,10 +81,12 @@ type ActionMemberEdge {
 }
 
 enum ActionMemberOrderByInput {
-  side_ASC
-  side_DESC
   id_ASC
   id_DESC
+  isUser_ASC
+  isUser_DESC
+  side_ASC
+  side_DESC
   updatedAt_ASC
   updatedAt_DESC
   createdAt_ASC
@@ -80,6 +94,8 @@ enum ActionMemberOrderByInput {
 }
 
 type ActionMemberPreviousValues {
+  id: ID!
+  isUser: Boolean!
   side: String!
 }
 
@@ -122,9 +138,38 @@ input ActionMemberSubscriptionWhereInput {
   node: ActionMemberWhereInput
 }
 
-input ActionMemberUpdateInput {
+input ActionMemberUpdateDataInput {
+  isUser: Boolean
   side: String
   person: PersonUpdateOneInput
+  user: UserUpdateOneInput
+}
+
+input ActionMemberUpdateInput {
+  isUser: Boolean
+  side: String
+  person: PersonUpdateOneInput
+  user: UserUpdateOneInput
+}
+
+input ActionMemberUpdateManyInput {
+  create: [ActionMemberCreateInput!]
+  connect: [ActionMemberWhereUniqueInput!]
+  disconnect: [ActionMemberWhereUniqueInput!]
+  delete: [ActionMemberWhereUniqueInput!]
+  update: [ActionMemberUpdateWithWhereUniqueNestedInput!]
+  upsert: [ActionMemberUpsertWithWhereUniqueNestedInput!]
+}
+
+input ActionMemberUpdateWithWhereUniqueNestedInput {
+  where: ActionMemberWhereUniqueInput!
+  data: ActionMemberUpdateDataInput!
+}
+
+input ActionMemberUpsertWithWhereUniqueNestedInput {
+  where: ActionMemberWhereUniqueInput!
+  update: ActionMemberUpdateDataInput!
+  create: ActionMemberCreateInput!
 }
 
 input ActionMemberWhereInput {
@@ -136,6 +181,50 @@ input ActionMemberWhereInput {
 
   """Logical NOT on all given filters combined by AND."""
   NOT: [ActionMemberWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  isUser: Boolean
+
+  """All values that are not equal to given value."""
+  isUser_not: Boolean
   side: String
 
   """All values that are not equal to given value."""
@@ -177,6 +266,14 @@ input ActionMemberWhereInput {
   """All values not ending with the given string."""
   side_not_ends_with: String
   person: PersonWhereInput
+  user: UserWhereInput
+  _MagicalBackRelation_ActionToActionMember_every: ActionWhereInput
+  _MagicalBackRelation_ActionToActionMember_some: ActionWhereInput
+  _MagicalBackRelation_ActionToActionMember_none: ActionWhereInput
+}
+
+input ActionMemberWhereUniqueInput {
+  id: ID
 }
 
 enum ActionOrderByInput {
@@ -252,6 +349,7 @@ input ActionUpdateInput {
   description: String
   karma: String
   executors: String
+  members: ActionMemberUpdateManyInput
   author: UserUpdateOneInput
 }
 
@@ -504,6 +602,9 @@ input ActionWhereInput {
 
   """All values not ending with the given string."""
   executors_not_ends_with: String
+  members_every: ActionMemberWhereInput
+  members_some: ActionMemberWhereInput
+  members_none: ActionMemberWhereInput
   author: UserWhereInput
 }
 
@@ -686,29 +787,32 @@ scalar Long
 
 type Mutation {
   createAction(data: ActionCreateInput!): Action!
-  createActionMember(data: ActionMemberCreateInput!): ActionMember!
   createAuthPayload(data: AuthPayloadCreateInput!): AuthPayload!
-  createPerson(data: PersonCreateInput!): Person!
+  createActionMember(data: ActionMemberCreateInput!): ActionMember!
   createUser(data: UserCreateInput!): User!
+  createPerson(data: PersonCreateInput!): Person!
   updateAction(data: ActionUpdateInput!, where: ActionWhereUniqueInput!): Action
-  updatePerson(data: PersonUpdateInput!, where: PersonWhereUniqueInput!): Person
+  updateActionMember(data: ActionMemberUpdateInput!, where: ActionMemberWhereUniqueInput!): ActionMember
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
+  updatePerson(data: PersonUpdateInput!, where: PersonWhereUniqueInput!): Person
   deleteAction(where: ActionWhereUniqueInput!): Action
-  deletePerson(where: PersonWhereUniqueInput!): Person
+  deleteActionMember(where: ActionMemberWhereUniqueInput!): ActionMember
   deleteUser(where: UserWhereUniqueInput!): User
+  deletePerson(where: PersonWhereUniqueInput!): Person
   upsertAction(where: ActionWhereUniqueInput!, create: ActionCreateInput!, update: ActionUpdateInput!): Action!
-  upsertPerson(where: PersonWhereUniqueInput!, create: PersonCreateInput!, update: PersonUpdateInput!): Person!
+  upsertActionMember(where: ActionMemberWhereUniqueInput!, create: ActionMemberCreateInput!, update: ActionMemberUpdateInput!): ActionMember!
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
+  upsertPerson(where: PersonWhereUniqueInput!, create: PersonCreateInput!, update: PersonUpdateInput!): Person!
   updateManyActions(data: ActionUpdateInput!, where: ActionWhereInput): BatchPayload!
-  updateManyActionMembers(data: ActionMemberUpdateInput!, where: ActionMemberWhereInput): BatchPayload!
   updateManyAuthPayloads(data: AuthPayloadUpdateInput!, where: AuthPayloadWhereInput): BatchPayload!
-  updateManyPersons(data: PersonUpdateInput!, where: PersonWhereInput): BatchPayload!
+  updateManyActionMembers(data: ActionMemberUpdateInput!, where: ActionMemberWhereInput): BatchPayload!
   updateManyUsers(data: UserUpdateInput!, where: UserWhereInput): BatchPayload!
+  updateManyPersons(data: PersonUpdateInput!, where: PersonWhereInput): BatchPayload!
   deleteManyActions(where: ActionWhereInput): BatchPayload!
-  deleteManyActionMembers(where: ActionMemberWhereInput): BatchPayload!
   deleteManyAuthPayloads(where: AuthPayloadWhereInput): BatchPayload!
-  deleteManyPersons(where: PersonWhereInput): BatchPayload!
+  deleteManyActionMembers(where: ActionMemberWhereInput): BatchPayload!
   deleteManyUsers(where: UserWhereInput): BatchPayload!
+  deleteManyPersons(where: PersonWhereInput): BatchPayload!
 }
 
 enum MutationType {
@@ -862,6 +966,7 @@ input PersonUpdateInput {
 input PersonUpdateOneInput {
   create: PersonCreateInput
   connect: PersonWhereUniqueInput
+  disconnect: Boolean
   delete: Boolean
   update: PersonUpdateDataInput
   upsert: PersonUpsertNestedInput
@@ -1075,18 +1180,19 @@ input PersonWhereUniqueInput {
 
 type Query {
   actions(where: ActionWhereInput, orderBy: ActionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Action]!
-  actionMembers(where: ActionMemberWhereInput, orderBy: ActionMemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [ActionMember]!
   authPayloads(where: AuthPayloadWhereInput, orderBy: AuthPayloadOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [AuthPayload]!
-  persons(where: PersonWhereInput, orderBy: PersonOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Person]!
+  actionMembers(where: ActionMemberWhereInput, orderBy: ActionMemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [ActionMember]!
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
+  persons(where: PersonWhereInput, orderBy: PersonOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Person]!
   action(where: ActionWhereUniqueInput!): Action
-  person(where: PersonWhereUniqueInput!): Person
+  actionMember(where: ActionMemberWhereUniqueInput!): ActionMember
   user(where: UserWhereUniqueInput!): User
+  person(where: PersonWhereUniqueInput!): Person
   actionsConnection(where: ActionWhereInput, orderBy: ActionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ActionConnection!
-  actionMembersConnection(where: ActionMemberWhereInput, orderBy: ActionMemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ActionMemberConnection!
   authPayloadsConnection(where: AuthPayloadWhereInput, orderBy: AuthPayloadOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): AuthPayloadConnection!
-  personsConnection(where: PersonWhereInput, orderBy: PersonOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PersonConnection!
+  actionMembersConnection(where: ActionMemberWhereInput, orderBy: ActionMemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ActionMemberConnection!
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
+  personsConnection(where: PersonWhereInput, orderBy: PersonOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PersonConnection!
 
   """Fetches an object given its ID"""
   node(
@@ -1097,10 +1203,10 @@ type Query {
 
 type Subscription {
   action(where: ActionSubscriptionWhereInput): ActionSubscriptionPayload
-  actionMember(where: ActionMemberSubscriptionWhereInput): ActionMemberSubscriptionPayload
   authPayload(where: AuthPayloadSubscriptionWhereInput): AuthPayloadSubscriptionPayload
-  person(where: PersonSubscriptionWhereInput): PersonSubscriptionPayload
+  actionMember(where: ActionMemberSubscriptionWhereInput): ActionMemberSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+  person(where: PersonSubscriptionWhereInput): PersonSubscriptionPayload
 }
 
 type User implements Node {
@@ -1490,12 +1596,15 @@ input UserWhereInput {
 
   """All values greater than or equal the given value."""
   updatedAt_gte: DateTime
-  _MagicalBackRelation_PersonToUser_every: PersonWhereInput
-  _MagicalBackRelation_PersonToUser_some: PersonWhereInput
-  _MagicalBackRelation_PersonToUser_none: PersonWhereInput
+  _MagicalBackRelation_ActionMemberToUser_every: ActionMemberWhereInput
+  _MagicalBackRelation_ActionMemberToUser_some: ActionMemberWhereInput
+  _MagicalBackRelation_ActionMemberToUser_none: ActionMemberWhereInput
   _MagicalBackRelation_AuthPayloadToUser_every: AuthPayloadWhereInput
   _MagicalBackRelation_AuthPayloadToUser_some: AuthPayloadWhereInput
   _MagicalBackRelation_AuthPayloadToUser_none: AuthPayloadWhereInput
+  _MagicalBackRelation_PersonToUser_every: PersonWhereInput
+  _MagicalBackRelation_PersonToUser_some: PersonWhereInput
+  _MagicalBackRelation_PersonToUser_none: PersonWhereInput
   _MagicalBackRelation_ActionToUser_every: ActionWhereInput
   _MagicalBackRelation_ActionToUser_some: ActionWhereInput
   _MagicalBackRelation_ActionToUser_none: ActionWhereInput

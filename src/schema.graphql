@@ -1,11 +1,16 @@
-# import User from './generated/prisma.graphql'
-# import Person from './generated/prisma.graphql'
-# import Action from './generated/prisma.graphql'
-# import AuthPayload from './generated/prisma.graphql'
+# import User, Person, Action, AuthPayload, PersonSubscriptionPayload, ActionSubscriptionPayload from './generated/prisma.graphql'
 
 
-input ActionMemberInput {
-  personId: ID!
+input CreateActionMemberInput {
+  personId: ID
+  isUser: Boolean!
+  side: String!
+}
+
+input UpdateActionMemberInput {
+  id: ID
+  personId: ID
+  isUser: Boolean!
   side: String!
 }
 
@@ -33,6 +38,7 @@ type Mutation {
 
   updateUser(
     email: String
+    password: String
     name: String
     nickname: String
   ): User!
@@ -58,7 +64,7 @@ type Mutation {
     description: String
     karma: String!
     executors: String!
-#    members: [ActionMemberInput!]!
+    members: [CreateActionMemberInput!]!
   ): Action!
   updateAction(
     id: ID!
@@ -67,7 +73,18 @@ type Mutation {
     description: String
     karma: String
     executors: String
-#    members: [ActionMemberInput!]!
+    members: [UpdateActionMemberInput!]
   ): Action!
   deleteAction(id: ID!): Action!
+}
+
+
+type Subscription {
+  personCreated: PersonSubscriptionPayload!
+  personUpdated: PersonSubscriptionPayload!
+  personDeleted: PersonSubscriptionPayload!
+  
+  actionCreated: ActionSubscriptionPayload!
+  actionUpdated: ActionSubscriptionPayload!
+  actionDeleted: ActionSubscriptionPayload!
 }

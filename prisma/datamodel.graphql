@@ -24,12 +24,15 @@ type Action {
   description: String
   karma: String!
   executors: String!
-#  members: [ActionMember!]!
+  members: [ActionMember!]!
   author: User!
 }
 
 type ActionMember {
-  person: Person!
+  id: ID! @unique
+  person: Person
+  user: User
+  isUser: Boolean!
   side: String!
 }
 

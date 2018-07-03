@@ -1,0 +1,6 @@
+endpoint: https://${env:STAGING_PRISMA_ENDPOINT}
+secret: ${env:STAGING_PRISMA_SECRET}
+datamodel: datamodel.graphql
+hooks:
+  post-deploy:
+    - graphql get-schema -p prisma
