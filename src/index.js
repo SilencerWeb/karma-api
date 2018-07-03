@@ -420,6 +420,22 @@ const resolvers = {
         return context.prisma.subscription.person({ where: { mutation_in: ['DELETED'] } }, info);
       },
     },
+    
+    actionCreated: {
+      subscribe: (parent, args, context, info) => {
+        return context.prisma.subscription.action({ where: { mutation_in: ['CREATED'] } }, info);
+      },
+    },
+    actionUpdated: {
+      subscribe: (parent, args, context, info) => {
+        return context.prisma.subscription.action({ where: { mutation_in: ['UPDATED'] } }, info);
+      },
+    },
+    actionDeleted: {
+      subscribe: (parent, args, context, info) => {
+        return context.prisma.subscription.action({ where: { mutation_in: ['DELETED'] } }, info);
+      },
+    },
   },
   AuthPayload: {
     user: async({ user: { id } }, args, context, info) => {

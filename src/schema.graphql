@@ -1,4 +1,4 @@
-# import User, Person, Action, AuthPayload, PersonSubscriptionPayload from './generated/prisma.graphql'
+# import User, Person, Action, AuthPayload, PersonSubscriptionPayload, ActionSubscriptionPayload from './generated/prisma.graphql'
 
 
 input CreateActionMemberInput {
@@ -82,4 +82,8 @@ type Subscription {
   personCreated: PersonSubscriptionPayload!
   personUpdated: PersonSubscriptionPayload!
   personDeleted: PersonSubscriptionPayload!
+  
+  actionCreated: ActionSubscriptionPayload!
+  actionUpdated: ActionSubscriptionPayload!
+  actionDeleted: ActionSubscriptionPayload!
 }
