@@ -109,8 +109,8 @@ const resolvers = {
         {
           where: {
             OR: [
-              { email: args.login, },
-              { nickname: args.login },
+              { email: args.login.toLowerCase(), },
+              { nickname: args.login.toLowerCase() },
             ],
           },
         },
@@ -134,14 +134,7 @@ const resolvers = {
 
     updateUser: async(_, args, context, info) => {
       const userId = getUserId(context);
-
-      const user = await context.prisma.query.user(
-        {
-          where: {
-            id: userId,
-          },
-        },
-      );
+      const password = args.password ? await bcrypt.hash(args.password, 10) : null;
 
       return context.prisma.mutation.updateUser(
         {
@@ -149,9 +142,10 @@ const resolvers = {
             id: userId,
           },
           data: {
-            email: args.email || user.email.toLowerCase(),
-            name: args.name || user.name,
-            nickname: args.nickname || user.nickname.toLowerCase(),
+            email: args.email.toLowerCase(),
+            password: password,
+            nickname: args.nickname.toLowerCase(),
+            name: args.name,
           },
         },
         info,
@@ -411,9 +405,19 @@ const resolvers = {
     },
   },
   Subscription: {
-    personUpdate: {
+    personCreated: {
       subscribe: (parent, args, context, info) => {
-        return context.prisma.subscription.person({}, info);
+        return context.prisma.subscription.person({ where: { mutation_in: ['CREATED'] } }, info);
+      },
+    },
+    personUpdated: {
+      subscribe: (parent, args, context, info) => {
+        return context.prisma.subscription.person({ where: { mutation_in: ['UPDATED'] } }, info);
+      },
+    },
+    personDeleted: {
+      subscribe: (parent, args, context, info) => {
+        return context.prisma.subscription.person({ where: { mutation_in: ['DELETED'] } }, info);
       },
     },
   },

@@ -38,6 +38,7 @@ type Mutation {
 
   updateUser(
     email: String
+    password: String
     name: String
     nickname: String
   ): User!
@@ -78,5 +79,7 @@ type Mutation {
 }
 
 type Subscription {
-  personUpdate: PersonSubscriptionPayload
+  personCreated: PersonSubscriptionPayload!
+  personUpdated: PersonSubscriptionPayload!
+  personDeleted: PersonSubscriptionPayload!
 }
