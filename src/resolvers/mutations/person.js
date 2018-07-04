@@ -1,4 +1,7 @@
-const { getUserId } = require('../../utils');
+const {
+  getUserId,
+  deletePersonHelper,
+} = require('../../utils');
 
 
 const createPerson = (_, args, context, info) => {
@@ -44,14 +47,7 @@ const updatePerson = (_, args, context, info) => {
 const deletePerson = (_, args, context, info) => {
   const userId = getUserId(context);
 
-  return context.prisma.mutation.deletePerson(
-    {
-      where: {
-        id: args.id,
-      },
-    },
-    info,
-  );
+  return deletePersonHelper(args.id, context);
 };
 
 

@@ -1,7 +1,10 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const { getUserId } = require('../../utils');
+const {
+  getUserId,
+  deleteUserHelper,
+} = require('../../utils');
 
 const config = require('../../config');
 
@@ -74,14 +77,7 @@ const updateUser = async(_, args, context, info) => {
 const deleteUser = (_, args, context, info) => {
   const userId = getUserId(context);
 
-  return context.prisma.mutation.deleteUser(
-    {
-      where: {
-        id: userId,
-      },
-    },
-    info,
-  );
+  return deleteUserHelper(context);
 };
 
 

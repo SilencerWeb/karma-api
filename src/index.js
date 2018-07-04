@@ -7,8 +7,6 @@ const { resolvers } = require('./resolvers');
 
 const config = require('./config');
 
-console.log('config', config);
-
 
 const server = new GraphQLServer({
   typeDefs: 'src/schema.graphql',

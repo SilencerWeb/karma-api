@@ -1,6 +1,5 @@
-const env = process.env.NODE_ENV; // 'local', 'development' or 'staging' or 'production'
+const env = process.env.NODE_ENV || 'development'; // 'local', 'development' or 'staging' or 'production'
 
-console.log('env', env);
 
 const local = {
   PRISMA_ENDPOINT: process.env.DEVELOPMENT_PRISMA_ENDPOINT,

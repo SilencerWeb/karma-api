@@ -15,6 +15,8 @@ const user = (_, args, context, info) => {
 };
 
 const users = (_, args, context, info) => {
+  const userId = getUserId(context);
+
   return context.prisma.query.users(
     {
       where: {},

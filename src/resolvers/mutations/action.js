@@ -1,4 +1,7 @@
-const { getUserId } = require('../../utils');
+const {
+  getUserId,
+  deleteActionHelper,
+} = require('../../utils');
 
 
 const createAction = async(_, args, context, info) => {
@@ -18,9 +21,11 @@ const createAction = async(_, args, context, info) => {
             side: member.side,
           },
         },
-        `{
-              id
-            }`,
+        `
+          {
+            id
+          }
+        `,
       )
       :
       await context.prisma.mutation.createActionMember(
@@ -35,9 +40,11 @@ const createAction = async(_, args, context, info) => {
             side: member.side,
           },
         },
-        `{
-              id
-            }`,
+        `
+          {
+            id
+          }
+        `,
       );
   });
 
@@ -52,9 +59,11 @@ const createAction = async(_, args, context, info) => {
           id: member.personId,
         },
       },
-      `{
-            karma
-          }`,
+      `
+        {
+          karma
+        }
+      `,
     );
 
     await context.prisma.mutation.updatePerson(
@@ -108,9 +117,11 @@ const updateAction = async(_, args, context, info) => {
             side: member.side,
           },
         },
-        `{
-              id
-            }`,
+        `
+          {
+            id
+          }
+        `,
       )
       :
       await context.prisma.mutation.createActionMember(
@@ -125,9 +136,11 @@ const updateAction = async(_, args, context, info) => {
             side: member.side,
           },
         },
-        `{
-              id
-            }`,
+        `
+          {
+            id
+          }
+        `,
       );
   });
 
@@ -139,11 +152,13 @@ const updateAction = async(_, args, context, info) => {
         id: args.id,
       },
     },
-    `{
-          members {
-            id
-          }
-        }`,
+    `
+      {
+        members {
+          id
+        }
+      }
+    `,
   );
 
   const updatedAction = await context.prisma.mutation.updateAction(
@@ -182,14 +197,7 @@ const updateAction = async(_, args, context, info) => {
 const deleteAction = (_, args, context, info) => {
   const userId = getUserId(context);
 
-  return context.prisma.mutation.deleteAction(
-    {
-      where: {
-        id: args.id,
-      },
-    },
-    info,
-  );
+  return deleteActionHelper(args.id, context);
 };
 
 
