@@ -7,7 +7,7 @@ const {
 const createAction = async(_, args, context, info) => {
   const userId = getUserId(context);
 
-  const membersIds = await args.members.map(async(member) => {
+  const createdMembersIds = await args.members.map(async(member) => {
     return member.isUser ?
       await context.prisma.mutation.createActionMember(
         {
@@ -48,7 +48,7 @@ const createAction = async(_, args, context, info) => {
       );
   });
 
-  const resolvedMembersIds = await Promise.all(membersIds);
+  const resolvedCreatedMembersIds = await Promise.all(createdMembersIds);
 
   await args.members.forEach(async(member) => {
     if (member.isUser || member.side !== args.executors) return;
@@ -87,7 +87,7 @@ const createAction = async(_, args, context, info) => {
         karma: args.karma,
         executors: args.executors,
         members: {
-          connect: resolvedMembersIds,
+          connect: resolvedCreatedMembersIds,
         },
         author: {
           connect: {
@@ -103,7 +103,7 @@ const createAction = async(_, args, context, info) => {
 const updateAction = async(_, args, context, info) => {
   const userId = getUserId(context);
 
-  const membersIds = await args.members.map(async(member) => {
+  const createdMembersIds = await args.members.map(async(member) => {
     return member.isUser ?
       await context.prisma.mutation.createActionMember(
         {
@@ -144,7 +144,7 @@ const updateAction = async(_, args, context, info) => {
       );
   });
 
-  const resolvedMembersIds = await Promise.all(membersIds);
+  const resolvedCreatedMembersIds = await Promise.all(createdMembersIds);
 
   const action = await context.prisma.query.action(
     {
@@ -154,12 +154,71 @@ const updateAction = async(_, args, context, info) => {
     },
     `
       {
+        karma
+        executors
         members {
           id
+          person {
+            id
+          }
+          isUser
+          side
         }
       }
     `,
   );
+
+  const oldMembersIds = action.members.map((member) => {
+    return {
+      id: member.id,
+    };
+  });
+
+  await args.members.forEach(async(member) => {
+    if (member.isUser) return;
+
+    const memberId = member.personId;
+
+    const person = await context.prisma.query.person(
+      {
+        where: {
+          id: memberId,
+        },
+      },
+      `
+        {
+          karma
+        }
+      `,
+    );
+
+    const prevMember = action.members.find((member) => {
+      if (member.isUser) return;
+
+      return member.person.id === memberId;
+    });
+
+    let personKarma = person.karma;
+
+    if (prevMember && prevMember.side === action.executors) {
+      personKarma = action.karma === 'positive' ? personKarma - 1 : personKarma + 1;
+    }
+
+    if (member.side === args.executors) {
+      personKarma = args.karma === 'positive' ? personKarma + 1 : personKarma - 1;
+    }
+
+    return await context.prisma.mutation.updatePerson(
+      {
+        where: {
+          id: member.personId,
+        },
+        data: {
+          karma: personKarma,
+        },
+      },
+    );
+  });
 
   const updatedAction = await context.prisma.mutation.updateAction(
     {
@@ -173,8 +232,8 @@ const updateAction = async(_, args, context, info) => {
         karma: args.karma,
         executors: args.executors,
         members: {
-          disconnect: action.members,
-          connect: resolvedMembersIds,
+          disconnect: oldMembersIds,
+          connect: resolvedCreatedMembersIds,
         },
       },
     },

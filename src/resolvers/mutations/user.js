@@ -54,6 +54,7 @@ const login = async(_, args, context, info) => {
   };
 };
 
+
 const updateUser = async(_, args, context, info) => {
   const userId = getUserId(context);
   const password = args.password ? await bcrypt.hash(args.password, 10) : null;
@@ -84,6 +85,7 @@ const deleteUser = (_, args, context, info) => {
 module.exports = {
   signup,
   login,
+
   updateUser,
   deleteUser,
 };

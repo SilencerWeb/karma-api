@@ -43,12 +43,47 @@ const deleteActionHelper = async(actionId, context) => {
     },
     `
       {
+        karma
+        executors
         members {
           id
+          person {
+            id
+          }
+          isUser
+          side
         }
       }
     `,
   );
+
+  await action.members.forEach(async(member) => {
+    if (member.isUser || member.side !== action.executors) return;
+
+    const person = await context.prisma.query.person(
+      {
+        where: {
+          id: member.person.id,
+        },
+      },
+      `
+        {
+          karma
+        }
+      `,
+    );
+
+    return await context.prisma.mutation.updatePerson(
+      {
+        where: {
+          id: member.person.id,
+        },
+        data: {
+          karma: action.karma === 'positive' ? person.karma - 1 : person.karma + 1,
+        },
+      },
+    );
+  });
 
   const actionMembersIds = action.members.map((member) => {
     return member.id;

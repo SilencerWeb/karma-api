@@ -1,6 +1,7 @@
 const {
   signup,
   login,
+  
   updateUser,
   deleteUser,
 } = require('./user');
@@ -21,6 +22,7 @@ const {
 const Mutation = {
   signup,
   login,
+  
   updateUser,
   deleteUser,
 
