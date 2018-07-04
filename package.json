@@ -9,9 +9,9 @@
   },
   "devDependencies": {
     "dotenv": "^6.0.0",
-    "graphql-cli": "^2.16.3",
+    "graphql-cli": "^2.16.4",
     "nodemon": "^1.17.5",
-    "prisma": "^1.10.2"
+    "prisma": "^1.11.0"
   },
   "scripts": {
     "start": "nodemon src/index.js",
