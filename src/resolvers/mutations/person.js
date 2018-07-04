@@ -1,7 +1,4 @@
-const {
-  getUserId,
-  deletePersonHelper,
-} = require('../../utils');
+const { getUserId } = require('../../utils');
 
 
 const createPerson = (_, args, context, info) => {
@@ -25,7 +22,7 @@ const createPerson = (_, args, context, info) => {
   );
 };
 
-const updatePerson = (_, args, context, info) => {
+const updatePerson = async(_, args, context, info) => {
   const userId = getUserId(context);
 
   return context.prisma.mutation.updatePerson(
@@ -37,7 +34,6 @@ const updatePerson = (_, args, context, info) => {
         name: args.name,
         position: args.position,
         description: args.description,
-        karma: args.karma,
       },
     },
     info,
@@ -47,7 +43,13 @@ const updatePerson = (_, args, context, info) => {
 const deletePerson = (_, args, context, info) => {
   const userId = getUserId(context);
 
-  return deletePersonHelper(args.id, context);
+  return context.prisma.mutation.deletePerson(
+    {
+      where: {
+        id: args.id,
+      },
+    },
+  );
 };
 
 
