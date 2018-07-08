@@ -4,8 +4,8 @@ type User {
   password: String!
   nickname: String! @unique
   name: String
-  persons: [Person!]! @relation(name: "UserPersons" onDelete: CASCADE)
-  actions: [Action!]! @relation(name: "UserActions" onDelete: CASCADE)
+  persons: [Person!]! @relation(name: "UserOnPerson" onDelete: CASCADE)
+  actions: [Action!]! @relation(name: "UserOnAction" onDelete: CASCADE)
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -16,8 +16,8 @@ type Person {
   position: String!
   karma: Int!
   description: String
-  actions: [Action!]! @relation(name: "PersonActions" onDelete: CASCADE)
-  author: User! @relation(name: "UserPersons")
+  actions: [Action!]! @relation(name: "PersonOnAction" onDelete: CASCADE)
+  author: User! @relation(name: "UserOnPerson")
 }
 
 type Action {
@@ -27,9 +27,9 @@ type Action {
   description: String
   karma: String!
   executors: String!
-  members: [ActionMember!]! @relation(name: "ActionMembers" onDelete: CASCADE)
-  persons: [Person!]! @relation(name: "PersonActions")
-  author: User! @relation(name: "UserActions")
+  members: [ActionMember!]! @relation(name: "ActionOnActionMembers" onDelete: CASCADE)
+  persons: [Person!]! @relation(name: "PersonOnAction")
+  author: User! @relation(name: "UserOnAction")
 }
 
 type ActionMember {
@@ -38,7 +38,7 @@ type ActionMember {
   user: User
   isUser: Boolean!
   side: String!
-  action: Action! @relation(name: "ActionMembers")
+  action: Action! @relation(name: "ActionOnActionMembers")
 }
 
 type AuthPayload {

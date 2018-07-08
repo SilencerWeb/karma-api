@@ -1,4 +1,4 @@
-const { getUserId } = require('../../utils');
+const { getUserId, updatePersonsKarma } = require('../../utils');
 
 
 const createPerson = (_, args, context, info) => {
@@ -40,16 +40,20 @@ const updatePerson = async(_, args, context, info) => {
   );
 };
 
-const deletePerson = (_, args, context, info) => {
+const deletePerson = async(_, args, context, info) => {
   const userId = getUserId(context);
 
-  return context.prisma.mutation.deletePerson(
+  const deletedPerson = await context.prisma.mutation.deletePerson(
     {
       where: {
         id: args.id,
       },
     },
   );
+
+  await updatePersonsKarma(context);
+
+  return deletedPerson;
 };
 
 
