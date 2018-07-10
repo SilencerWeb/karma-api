@@ -1,6 +1,18 @@
+const fs = require('fs');
+const aws = require('aws-sdk');
+const uuid = require('uuid/v1');
 const jwt = require('jsonwebtoken');
 
 const config = require('./config');
+
+
+const s3 = new aws.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  params: {
+    Bucket: process.env.AWS_BUCKET_NAME,
+  },
+});
 
 
 const getUserId = (context) => {
@@ -14,6 +26,32 @@ const getUserId = (context) => {
   }
 
   throw new Error('Not authorized');
+};
+
+
+const processUpload = async(upload, context, info) => {
+  if (!upload) {
+    return console.log('No file received.');
+  }
+
+  const file = await upload;
+
+  const fileExtension = file.filename.split('.').pop();
+
+  const filename = `${uuid()}.${fileExtension}`;
+
+  const response = await s3.upload({ Key: filename, ACL: 'public-read', Body: file.stream, }).promise();
+
+  return context.prisma.mutation.createFile(
+    {
+      data: {
+        filename: filename,
+        mimetype: file.mimetype,
+        encoding: file.encoding,
+        url: response.Location,
+      },
+    },
+    info);
 };
 
 
@@ -89,5 +127,6 @@ const updatePersonsKarma = async(context) => {
 
 module.exports = {
   getUserId,
+  processUpload,
   updatePersonsKarma,
 };

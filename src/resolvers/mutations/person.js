@@ -7,6 +7,11 @@ const createPerson = (_, args, context, info) => {
   return context.prisma.mutation.createPerson(
     {
       data: {
+        avatar: args.avatar ? {
+          connect: {
+            id: args.avatar,
+          },
+        } : null,
         name: args.name,
         position: args.position,
         description: args.description,

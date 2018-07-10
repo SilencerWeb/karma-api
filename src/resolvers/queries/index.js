@@ -1,6 +1,7 @@
 const { user, users } = require('./user');
 const { person, persons } = require('./person');
 const { action, actions } = require('./action');
+const { file, files } = require('./file');
 
 
 const Query = {
@@ -12,6 +13,9 @@ const Query = {
 
   action,
   actions,
+
+  file,
+  files,
 };
 
 

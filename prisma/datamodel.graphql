@@ -12,6 +12,7 @@ type User {
 
 type Person {
   id: ID! @unique
+  avatar: File @relation(name: "PersonOnFile" onDelete: CASCADE)
   name: String!
   position: String!
   karma: Int!
@@ -39,6 +40,17 @@ type ActionMember {
   isUser: Boolean!
   side: String!
   action: Action! @relation(name: "ActionOnActionMembers")
+}
+
+type File {
+  id: ID! @unique
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  filename: String!
+  mimetype: String!
+  encoding: String!
+  url: String! @unique
+  person: Person @relation(name: "PersonOnFile")
 }
 
 type AuthPayload {

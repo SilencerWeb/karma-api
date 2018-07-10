@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const { GraphQLServer } = require('graphql-yoga');
 const { Prisma } = require('prisma-binding');
+const cors = require('cors');
 
 const { resolvers } = require('./resolvers');
 
@@ -22,5 +23,7 @@ const server = new GraphQLServer({
   }),
 });
 
+
+server.express.use('/*', cors());
 
 server.start(() => console.log(`GraphQL server is running on http://localhost:4000`));

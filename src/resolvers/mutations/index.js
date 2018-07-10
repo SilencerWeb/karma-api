@@ -1,7 +1,7 @@
 const {
   signup,
   login,
-  
+
   updateUser,
   deleteUser,
 } = require('./user');
@@ -18,11 +18,17 @@ const {
   deleteAction,
 } = require('./action');
 
+const {
+  uploadFile,
+  uploadFiles,
+  deleteFile,
+} = require('./file');
+
 
 const Mutation = {
   signup,
   login,
-  
+
   updateUser,
   deleteUser,
 
@@ -33,6 +39,10 @@ const Mutation = {
   createAction,
   updateAction,
   deleteAction,
+
+  uploadFile,
+  uploadFiles,
+  deleteFile,
 };
 
 

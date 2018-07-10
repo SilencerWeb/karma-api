@@ -1,4 +1,4 @@
-# import User, Person, Action, AuthPayload, PersonSubscriptionPayload, ActionSubscriptionPayload from './generated/prisma.graphql'
+# import User, Person, Action, File, AuthPayload, PersonSubscriptionPayload, ActionSubscriptionPayload from './generated/prisma.graphql'
 
 
 input CreateActionMemberInput {
@@ -14,6 +14,8 @@ input UpdateActionMemberInput {
   side: String!
 }
 
+scalar Upload
+
 
 type Query {
   user: User!
@@ -24,6 +26,9 @@ type Query {
 
   action(id: ID!): Action!
   actions: [Action!]!
+
+  file(id: ID!): File!
+  files: [File!]!
 }
 
 
@@ -45,6 +50,7 @@ type Mutation {
   deleteUser: User!
 
   createPerson(
+    avatar: ID
     name: String!
     position: String!
     description: String
@@ -76,6 +82,10 @@ type Mutation {
     members: [UpdateActionMemberInput!]
   ): Action!
   deleteAction(id: ID!): Action!
+
+  uploadFile(file: Upload!): File!
+  uploadFiles(files: [Upload!]!): [File!]!
+  deleteFile(id: ID!): File!
 }
 
 
@@ -83,7 +93,7 @@ type Subscription {
   personCreated: PersonSubscriptionPayload!
   personUpdated: PersonSubscriptionPayload!
   personDeleted: PersonSubscriptionPayload!
-  
+
   actionCreated: ActionSubscriptionPayload!
   actionUpdated: ActionSubscriptionPayload!
   actionDeleted: ActionSubscriptionPayload!

@@ -2,10 +2,13 @@
   "name": "karma-api",
   "version": "1.0.0",
   "dependencies": {
+    "aws-sdk": "^2.270.1",
     "bcryptjs": "^2.4.3",
+    "cors": "^2.8.4",
     "graphql-yoga": "^1.14.10",
     "jsonwebtoken": "^8.3.0",
-    "prisma-binding": "^2.1.0"
+    "prisma-binding": "^2.1.0",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "dotenv": "^6.0.0",
