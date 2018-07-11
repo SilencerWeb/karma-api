@@ -1,4 +1,4 @@
-const { getUserId, updatePersonsKarma } = require('../../utils');
+const { getUserId, processDelete, updatePersonsKarma } = require('../../utils');
 
 
 const createPerson = (_, args, context, info) => {
@@ -53,6 +53,8 @@ const updatePerson = async(_, args, context, info) => {
     );
 
     if (person.avatar && person.avatar.id) {
+      await processDelete(person.avatar.id, context);
+
       data.avatar = {
         disconnect: {
           id: person.avatar.id,
@@ -65,7 +67,7 @@ const updatePerson = async(_, args, context, info) => {
     };
   }
 
-  return context.prisma.mutation.updatePerson(
+  const updatedPerson = await context.prisma.mutation.updatePerson(
     {
       where: {
         id: args.id,
@@ -74,10 +76,51 @@ const updatePerson = async(_, args, context, info) => {
     },
     info,
   );
+
+  await context.prisma.mutation.deleteFile(
+    {
+      where: {
+        id: args.id,
+      },
+    },
+    info,
+  );
+
+  return updatedPerson;
 };
 
 const deletePerson = async(_, args, context, info) => {
   const userId = getUserId(context);
+
+  const person = await context.prisma.query.person(
+    {
+      where: {
+        id: args.id,
+      },
+    },
+    `
+      {
+        avatar {
+          id
+        }
+      }
+    `,
+  );
+
+  if (person.avatar && person.avatar.id) {
+    const avatarId = person.avatar.id;
+
+    await processDelete(avatarId, context);
+
+    await context.prisma.mutation.deleteFile(
+      {
+        where: {
+          id: avatarId,
+        },
+      },
+      info,
+    );
+  }
 
   const deletedPerson = await context.prisma.mutation.deletePerson(
     {

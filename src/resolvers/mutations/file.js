@@ -1,4 +1,4 @@
-const { processUpload } = require('../../utils');
+const { processUpload, processDelete } = require('../../utils');
 
 
 const uploadFile = async(_, args, context, info) => {
@@ -10,6 +10,8 @@ const uploadFiles = async(_, args, context, info) => {
 };
 
 const deleteFile = async(_, args, context, info) => {
+  await processDelete(args.id, context);
+
   return await context.prisma.mutation.deleteFile(
     {
       where: {

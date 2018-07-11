@@ -54,6 +54,23 @@ const processUpload = async(upload, context, info) => {
     info);
 };
 
+const processDelete = async(id, context) => {
+  const file = await context.prisma.query.file(
+    {
+      where: {
+        id: id,
+      },
+    },
+    `
+      {
+        filename
+      }
+    `,
+  );
+
+  return await s3.deleteObject({ Key: file.filename }).promise();
+};
+
 
 const updatePersonKarma = async(personId, context) => {
   const person = await context.prisma.query.person(
@@ -127,6 +144,9 @@ const updatePersonsKarma = async(context) => {
 
 module.exports = {
   getUserId,
+
   processUpload,
+  processDelete,
+
   updatePersonsKarma,
 };
