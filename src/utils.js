@@ -1,4 +1,3 @@
-const fs = require('fs');
 const aws = require('aws-sdk');
 const uuid = require('uuid/v1');
 const jwt = require('jsonwebtoken');

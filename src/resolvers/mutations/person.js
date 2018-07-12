@@ -77,14 +77,17 @@ const updatePerson = async(_, args, context, info) => {
     info,
   );
 
-  await context.prisma.mutation.deleteFile(
-    {
-      where: {
-        id: args.id,
+
+  if (args.deleteAvatar) {
+    await context.prisma.mutation.deleteFile(
+      {
+        where: {
+          id: args.id,
+        },
       },
-    },
-    info,
-  );
+      info,
+    );
+  }
 
   return updatedPerson;
 };
