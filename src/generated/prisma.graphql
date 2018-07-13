@@ -1,5 +1,5 @@
 # source: https://eu1.prisma.sh/silencerweb-d7143d/karma-api/development
-# timestamp: Mon Jul 09 2018 18:05:33 GMT+0500 (Uzbekistan Standard Time)
+# timestamp: Fri Jul 13 2018 15:48:36 GMT+0500 (Uzbekistan Standard Time)
 
 type Action implements Node {
   id: ID!
@@ -94,7 +94,7 @@ type ActionMember implements Node {
   user(where: UserWhereInput): User
   isUser: Boolean!
   side: String!
-  action(where: ActionWhereInput): Action!
+  action(where: ActionWhereInput): Action
 }
 
 """A connection to a list of items."""
@@ -112,7 +112,7 @@ input ActionMemberCreateInput {
   side: String!
   person: PersonCreateOneInput
   user: UserCreateOneInput
-  action: ActionCreateOneWithoutMembersInput!
+  action: ActionCreateOneWithoutMembersInput
 }
 
 input ActionMemberCreateManyWithoutActionInput {
@@ -430,6 +430,7 @@ input ActionUpdateManyWithoutPersonsInput {
 input ActionUpdateOneWithoutMembersInput {
   create: ActionCreateWithoutMembersInput
   connect: ActionWhereUniqueInput
+  disconnect: Boolean
   delete: Boolean
   update: ActionUpdateWithoutMembersDataInput
   upsert: ActionUpsertWithoutMembersInput

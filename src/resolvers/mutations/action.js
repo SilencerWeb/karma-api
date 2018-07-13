@@ -83,25 +83,24 @@ const updateAction = async(_, args, context, info) => {
         id
         members {
           id
-          person {
-            id
-          }
-          isUser
+        }
+        persons {
+          id
         }
       }
     `,
   );
 
-  const personsIdsForDisconnect = action.members.filter((member) => {
-    return !member.isUser;
-  }).map((member) => {
-    return {
-      id: member.person.id,
-    };
+  const personsIdsForDisconnect = action.persons.filter((person) => {
+    return args.members.every((member) => {
+      return member.personId !== person.id;
+    });
   });
 
   const personsIdsForConnect = args.members.filter((member) => {
-    return !member.isUser;
+    return !member.isUser && action.persons.every((person) => {
+      return member.personId !== person.id;
+    });
   }).map((member) => {
     return {
       id: member.personId,

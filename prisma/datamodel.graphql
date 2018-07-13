@@ -39,7 +39,7 @@ type ActionMember {
   user: User
   isUser: Boolean!
   side: String!
-  action: Action! @relation(name: "ActionOnActionMembers")
+  action: Action @relation(name: "ActionOnActionMembers")
 }
 
 type File {
