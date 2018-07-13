@@ -36,8 +36,10 @@ const updatePerson = async(_, args, context, info) => {
     description: args.description,
   };
 
+  let person;
+
   if (args.deleteAvatar) {
-    const person = await context.prisma.query.person(
+    person = await context.prisma.query.person(
       {
         where: {
           id: args.id,
@@ -78,14 +80,13 @@ const updatePerson = async(_, args, context, info) => {
   );
 
 
-  if (args.deleteAvatar) {
+  if (args.deleteAvatar && person.avatar && person.avatar.id) {
     await context.prisma.mutation.deleteFile(
       {
         where: {
-          id: args.id,
+          id: person.avatar.id,
         },
       },
-      info,
     );
   }
 
